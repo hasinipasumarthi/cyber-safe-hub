@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CyberSafe SOC Pink Mode</title>
+<title>CyberSafe SOC Pink Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -15,16 +15,61 @@ body {
   transition: 0.3s;
 }
 
-/* LIGHT MODE */
-body.light {
-  background: #fff0f6;
-  color: #4a044e;
+/* LOGIN */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  background: #05010a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loginBox {
+  width: 320px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #3b0a2a;
+  background: #120012;
+}
+
+.loginBox h2 {
+  text-align: center;
+  color: #ff4da6;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #1a0010;
+  border: 1px solid #3b0a2a;
+  color: #fbcfe8;
+  border-radius: 6px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: linear-gradient(90deg,#ff4da6,#ff1f8f);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+button:hover {
+  filter: brightness(1.1);
 }
 
 /* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 20px;
   background: #120012;
   border-bottom: 1px solid #3b0a2a;
@@ -61,40 +106,11 @@ body.light {
   padding: 12px;
 }
 
-/* HEADINGS */
 h2 {
   font-size: 12px;
   color: #ff4da6;
   text-transform: uppercase;
   margin-top: 0;
-}
-
-/* INPUTS */
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
-  background: #1a0010;
-  border: 1px solid #3b0a2a;
-  color: #fbcfe8;
-  border-radius: 6px;
-}
-
-/* BUTTONS */
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background: linear-gradient(90deg,#ff4da6,#ff1f8f);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
-}
-
-button:hover {
-  filter: brightness(1.1);
 }
 
 /* LOG */
@@ -145,9 +161,21 @@ canvas {
 
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="loginBox">
+    <h2>SOC LOGIN</h2>
+
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
+    <button onclick="login()">Enter Dashboard</button>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="topbar">
-  <div class="logo">💗 CyberSafe SOC</div>
+  <div class="logo">💗 CyberSafe SOC Dashboard</div>
   <button class="themeBtn" onclick="toggleTheme()">🌓</button>
 </div>
 
@@ -169,7 +197,7 @@ canvas {
   <input id="emailInput" placeholder="Email text">
   <button onclick="scanEmail()">Phishing Scan</button>
 
-  <button onclick="generateScore()">Generate Score</button>
+  <button onclick="generateScore()">Generate SOC Score</button>
 
   <div id="score"></div>
 </div>
@@ -198,7 +226,7 @@ canvas {
 
 <!-- AI -->
 <div class="panel">
-  <h2>AI Analyst</h2>
+  <h2>AI SOC Analyst</h2>
   <button onclick="generateAI()">Generate Report</button>
   <pre id="ai"></pre>
 </div>
@@ -207,6 +235,23 @@ canvas {
 
 <script>
 
+let loggedIn = false;
+
+/* LOGIN (RESTORED + VALIDATION) */
+function login() {
+  const u = document.getElementById("username").value;
+  const p = document.getElementById("password").value;
+
+  if (u === "hasini.p77" && p === "Hasini9!") {
+    loggedIn = true;
+    document.getElementById("loginScreen").style.display = "none";
+    log("User authenticated: " + u);
+  } else {
+    alert("ACCESS DENIED ❌");
+  }
+}
+
+/* THEME */
 function toggleTheme(){
   document.body.classList.toggle("light");
   log("Theme toggled");
@@ -268,6 +313,7 @@ function scanEmail(){
   log("Email scan");
 }
 
+/* SCORE */
 function generateScore(){
   let pw=document.getElementById("passwordInput").value;
   let e=document.getElementById("emailInput").value.toLowerCase();
@@ -280,7 +326,7 @@ function generateScore(){
   document.getElementById("score").innerText="Score: "+score;
 
   update(pwRisk,phRisk,100-score);
-  log("Score generated");
+  log("SOC score generated");
 }
 
 /* UPDATE */
@@ -296,6 +342,7 @@ function update(pw,ph,sys){
   else alert.innerHTML="<div class='alert low'>SAFE</div>";
 }
 
+/* AI */
 function generateAI(){
   let pw=document.getElementById("passwordInput").value;
   let e=document.getElementById("emailInput").value;
