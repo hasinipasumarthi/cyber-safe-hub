@@ -35,7 +35,7 @@ h1 {
   font-size: 22px;
 }
 
-/* FLOATING TERMINAL BUTTON */
+/* FLOAT BUTTON */
 .toggle-btn {
   position: fixed;
   top: 15px;
@@ -51,21 +51,11 @@ h1 {
   color: black;
 
   font-size: 18px;
-  font-weight: bold;
-
   cursor: pointer;
 
   display: flex;
   align-items: center;
   justify-content: center;
-
-  box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  transition: 0.2s;
-}
-
-.toggle-btn:hover {
-  background: #0ea5e9;
-  transform: scale(1.1);
 }
 
 /* GRID */
@@ -151,7 +141,7 @@ button:hover {
 .card:nth-child(4) { grid-area: phishing; }
 .card:nth-child(5) { grid-area: chart; }
 
-/* TERMINAL MODE */
+/* TERMINAL */
 body.terminal {
   background: black;
   color: #00ff88;
@@ -177,7 +167,6 @@ body.terminal .bar-fill {
 
 <body>
 
-<!-- FLOATING BUTTON -->
 <button class="toggle-btn" onclick="toggleTerminal()">⟡</button>
 
 <header>
@@ -188,10 +177,11 @@ body.terminal .bar-fill {
 
 <div class="container">
 
-<!-- SCORE -->
+<!-- SCORE INPUT (NEW) -->
 <div class="card">
-  <h2>📊 Security Score</h2>
-  <button onclick="calculateScore()">Calculate Score</button>
+  <h2>📊 Security Score Input</h2>
+  <input id="securityScore" type="number" placeholder="Enter score (0 - 100)" min="0" max="100">
+  <button onclick="setScore()">Set Score</button>
   <div id="scoreResult"></div>
 </div>
 
@@ -224,7 +214,7 @@ body.terminal .bar-fill {
 <div class="card">
   <h2>📈 Risk Visualization</h2>
 
-  <p>Password Risk</p>
+  <p>Security Risk</p>
   <div class="bar"><div id="pwBar" class="bar-fill"></div></div>
 
   <p>Phishing Risk</p>
@@ -246,10 +236,27 @@ function addLog(msg) {
   log.prepend(div);
 }
 
-/* TERMINAL MODE */
+/* TERMINAL */
 function toggleTerminal() {
   document.body.classList.toggle("terminal");
   addLog("Terminal mode toggled");
+}
+
+/* NEW SCORE INPUT */
+function setScore() {
+  const score = Number(document.getElementById("securityScore").value);
+
+  if (isNaN(score) || score < 0 || score > 100) {
+    alert("Enter a number between 0 and 100");
+    return;
+  }
+
+  document.getElementById("scoreResult").textContent =
+    "Security Score: " + score;
+
+  addLog("Security score set to " + score);
+
+  updateChart(score);
 }
 
 /* PASSWORD */
@@ -286,13 +293,11 @@ function checkPhishing() {
   updateChart();
 }
 
-/* SCORE */
-function calculateScore() {
-  addLog("Security score calculated");
-}
-
 /* CHART */
-function updateChart() {
+function updateChart(scoreOverride) {
+
+  const score = scoreOverride ?? 50;
+
   const pw = document.getElementById("password").value;
   const email = document.getElementById("emailText").value.toLowerCase();
 
@@ -310,7 +315,7 @@ function updateChart() {
   if (email.includes("click here")) phRisk += 40;
   if (email.includes("password")) phRisk += 20;
 
-  let overall = Math.round((pwRisk + phRisk) / 2);
+  const overall = Math.round((pwRisk + phRisk + (100 - score)) / 3);
 
   document.getElementById("pwBar").style.width = pwRisk + "%";
   document.getElementById("phishBar").style.width = phRisk + "%";
@@ -319,39 +324,31 @@ function updateChart() {
 
 /* EXPORT CSV */
 function exportCSV() {
-  const log = document.getElementById("logPanel").innerText.trim();
-  if (!log) return alert("No logs to export");
+  const log = document.getElementById("logPanel").innerText;
+  if (!log) return alert("No logs");
 
-  const rows = log.split("\n").map(l => `"${l}"`).join("\n");
-
-  const blob = new Blob([rows], { type: "text/csv" });
+  const blob = new Blob([log], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
   a.download = "incident_log.csv";
   a.click();
-
-  URL.revokeObjectURL(url);
-
-  addLog("CSV exported");
 }
 
 /* EXPORT PDF */
 function exportPDF() {
-  const log = document.getElementById("logPanel").innerText.trim();
-  if (!log) return alert("No logs to export");
+  const log = document.getElementById("logPanel").innerText;
+  if (!log) return alert("No logs");
 
   const win = window.open("", "", "width=800,height=600");
 
   win.document.write(`
-    <h2>CyberSafe Hub Incident Report</h2>
+    <h2>Incident Report</h2>
     <pre>${log}</pre>
   `);
 
   win.print();
-
-  addLog("PDF exported");
 }
 
 updateChart();
