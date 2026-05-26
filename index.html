@@ -7,155 +7,230 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: Inter, sans-serif;
-  background: #05010a;
-  color: #fbcfe8;
-  transition: 0.3s;
+
+body{
+  margin:0;
+  font-family:Inter,sans-serif;
+  background:#05010a;
+  color:#fbcfe8;
+  transition:0.3s;
+}
+
+/* LIGHT MODE */
+body.light{
+  background:#fff0f6;
+  color:#4a044e;
+}
+
+body.light .panel,
+body.light .topbar{
+  background:white;
+  border-color:#f9a8d4;
+}
+
+body.light canvas{
+  background:white;
 }
 
 /* LOGIN */
-#loginScreen {
-  position: fixed;
-  inset: 0;
-  background: #05010a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+#loginScreen{
+  position:fixed;
+  inset:0;
+  background:#05010a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
 
-.loginBox {
-  width: 320px;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #3b0a2a;
-  background: #120012;
+.loginBox{
+  width:340px;
+  padding:24px;
+  border-radius:14px;
+  border:1px solid #3b0a2a;
+  background:#120012;
+  box-shadow:0 0 25px rgba(255,77,166,0.2);
 }
 
-.loginBox h2 {
-  text-align: center;
-  color: #ff4da6;
+.loginBox h2{
+  text-align:center;
+  color:#ff4da6;
+  margin-top:0;
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background: #1a0010;
-  border: 1px solid #3b0a2a;
-  color: #fbcfe8;
-  border-radius: 6px;
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#1a0010;
+  border:1px solid #3b0a2a;
+  color:#fbcfe8;
+  border-radius:8px;
+  box-sizing:border-box;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background: linear-gradient(90deg,#ff4da6,#ff1f8f);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  color: white;
+button{
+  width:100%;
+  padding:11px;
+  margin-top:10px;
+  background:linear-gradient(90deg,#ff4da6,#ff1f8f);
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  color:white;
+  transition:0.2s;
 }
 
-button:hover {
-  filter: brightness(1.1);
+button:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.08);
 }
 
-/* TOP BAR */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  background: #120012;
-  border-bottom: 1px solid #3b0a2a;
+/* TOPBAR */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 20px;
+  background:#120012;
+  border-bottom:1px solid #3b0a2a;
+  position:sticky;
+  top:0;
+  z-index:100;
 }
 
-.logo {
-  color: #ff4da6;
-  font-weight: bold;
+.logo{
+  color:#ff4da6;
+  font-weight:700;
+  font-size:18px;
 }
 
-/* THEME BUTTON */
-.themeBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid #ff4da6;
-  background: #1a0010;
-  color: #ff4da6;
-  cursor: pointer;
+/* TOP BUTTONS */
+.topButtons{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.circleBtn{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid #ff4da6;
+  background:#1a0010;
+  color:#ff4da6;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  padding:0;
 }
 
 /* GRID */
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  padding: 12px;
+.container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:14px;
+  padding:14px;
 }
 
-.panel {
-  background: #120012;
-  border: 1px solid #3b0a2a;
-  border-radius: 10px;
-  padding: 12px;
+/* PANELS */
+.panel{
+  background:#120012;
+  border:1px solid #3b0a2a;
+  border-radius:14px;
+  padding:14px;
 }
 
-h2 {
-  font-size: 12px;
-  color: #ff4da6;
-  text-transform: uppercase;
-  margin-top: 0;
+h2{
+  font-size:12px;
+  color:#ff4da6;
+  text-transform:uppercase;
+  margin-top:0;
+  letter-spacing:1px;
 }
 
 /* LOG */
-#log {
-  height: 220px;
-  overflow-y: auto;
-  font-family: monospace;
-  font-size: 12px;
+#log{
+  height:240px;
+  overflow-y:auto;
+  font-family:monospace;
+  font-size:12px;
+  line-height:1.5;
 }
 
 /* BARS */
-.bar {
-  height: 10px;
-  background: #2a001a;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 6px 0;
+.bar{
+  height:10px;
+  background:#2a001a;
+  border-radius:999px;
+  overflow:hidden;
+  margin:8px 0 12px;
 }
 
-.fill {
-  height: 100%;
-  width: 0%;
-  background: #ff4da6;
-  transition: 0.3s;
+.fill{
+  height:100%;
+  width:0%;
+  background:#ff4da6;
+  transition:0.4s;
 }
 
 /* ALERTS */
-.alert {
-  margin-top: 10px;
-  padding: 8px;
-  border-radius: 6px;
+.alert{
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:bold;
 }
 
-.high { background: rgba(255,77,166,0.2); border-left: 3px solid #ff4da6; }
-.med { background: rgba(255,105,180,0.15); border-left: 3px solid #ff69b4; }
-.low { background: rgba(255,182,193,0.15); border-left: 3px solid #ffb6c1; }
-
-/* CANVAS */
-canvas {
-  width: 100%;
-  height: 220px;
-  background: #1a0010;
-  border-radius: 8px;
-  border: 1px solid #3b0a2a;
+.high{
+  background:rgba(255,77,166,0.2);
+  border-left:4px solid #ff4da6;
 }
+
+.med{
+  background:rgba(255,105,180,0.15);
+  border-left:4px solid #ff69b4;
+}
+
+.low{
+  background:rgba(255,182,193,0.15);
+  border-left:4px solid #ffb6c1;
+}
+
+/* GRAPH */
+canvas{
+  width:100%;
+  height:240px;
+  background:#1a0010;
+  border-radius:10px;
+  border:1px solid #3b0a2a;
+}
+
+/* SCORE */
+#score{
+  margin-top:10px;
+  font-weight:bold;
+  color:#ffb6d9;
+}
+
+/* AI BOX */
+pre{
+  white-space:pre-wrap;
+  font-family:monospace;
+  font-size:12px;
+}
+
+/* STATUS BADGE */
+.status{
+  color:#4ade80;
+  font-weight:bold;
+  font-size:13px;
+}
+
 </style>
 </head>
 
@@ -163,198 +238,351 @@ canvas {
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
+
   <div class="loginBox">
-    <h2>SOC LOGIN</h2>
+
+    <h2>💗 SOC LOGIN</h2>
 
     <input id="username" placeholder="Username">
+
     <input id="password" type="password" placeholder="Password">
 
     <button onclick="login()">Enter Dashboard</button>
+
   </div>
+
 </div>
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <div class="logo">💗 CyberSafe SOC Dashboard</div>
-  <button class="themeBtn" onclick="toggleTheme()">🌓</button>
+
+  <div class="logo">
+    💗 CyberSafe SOC Dashboard
+  </div>
+
+  <div class="topButtons">
+
+    <div class="status">🟢 LIVE</div>
+
+    <!-- THEME -->
+    <button class="circleBtn" onclick="toggleTheme()">🌓</button>
+
+    <!-- LOGOUT -->
+    <button class="circleBtn" onclick="logout()">🚪</button>
+
+  </div>
+
 </div>
 
+<!-- MAIN GRID -->
 <div class="container">
 
-<!-- GRAPH -->
-<div class="panel">
-  <h2>Live Risk Stream</h2>
-  <canvas id="chart"></canvas>
-</div>
+  <!-- LIVE GRAPH -->
+  <div class="panel">
 
-<!-- SCANNER -->
-<div class="panel">
-  <h2>Security Scanner</h2>
+    <h2>Live Risk Stream</h2>
 
-  <input id="passwordInput" placeholder="Password">
-  <button onclick="scanPassword()">Password Scan</button>
+    <canvas id="chart"></canvas>
 
-  <input id="emailInput" placeholder="Email text">
-  <button onclick="scanEmail()">Phishing Scan</button>
+  </div>
 
-  <button onclick="generateScore()">Generate SOC Score</button>
+  <!-- SCANNER -->
+  <div class="panel">
 
-  <div id="score"></div>
-</div>
+    <h2>Security Scanner</h2>
 
-<!-- LOG -->
-<div class="panel">
-  <h2>Incident Log</h2>
-  <div id="log"></div>
-</div>
+    <input id="passwordInput" placeholder="Enter password">
 
-<!-- RISKS -->
-<div class="panel">
-  <h2>Risk Metrics</h2>
+    <button onclick="scanPassword()">Password Scan</button>
 
-  <div>Password</div>
-  <div class="bar"><div id="pw" class="fill"></div></div>
+    <input id="emailInput" placeholder="Paste email text">
 
-  <div>Phishing</div>
-  <div class="bar"><div id="ph" class="fill"></div></div>
+    <button onclick="scanEmail()">Phishing Scan</button>
 
-  <div>System</div>
-  <div class="bar"><div id="sys" class="fill"></div></div>
+    <button onclick="generateScore()">Generate SOC Score</button>
 
-  <div id="alert"></div>
-</div>
+    <div id="score"></div>
 
-<!-- AI -->
-<div class="panel">
-  <h2>AI SOC Analyst</h2>
-  <button onclick="generateAI()">Generate Report</button>
-  <pre id="ai"></pre>
-</div>
+  </div>
+
+  <!-- INCIDENT LOG -->
+  <div class="panel">
+
+    <h2>Incident Log</h2>
+
+    <div id="log"></div>
+
+  </div>
+
+  <!-- RISK METRICS -->
+  <div class="panel">
+
+    <h2>Risk Metrics</h2>
+
+    <div>Password Risk</div>
+    <div class="bar"><div id="pw" class="fill"></div></div>
+
+    <div>Phishing Risk</div>
+    <div class="bar"><div id="ph" class="fill"></div></div>
+
+    <div>System Risk</div>
+    <div class="bar"><div id="sys" class="fill"></div></div>
+
+    <div id="alert"></div>
+
+  </div>
+
+  <!-- AI ANALYST -->
+  <div class="panel">
+
+    <h2>AI SOC Analyst</h2>
+
+    <button onclick="generateAI()">Generate Report</button>
+
+    <pre id="ai"></pre>
+
+  </div>
 
 </div>
 
 <script>
 
-let loggedIn = false;
+/* LOGIN */
+function login(){
 
-/* LOGIN (RESTORED + VALIDATION) */
-function login() {
-  const u = document.getElementById("username").value;
-  const p = document.getElementById("password").value;
+  const u=document.getElementById("username").value;
+  const p=document.getElementById("password").value;
 
-  if (u === "hasini.p77" && p === "Hasini9!") {
-    loggedIn = true;
-    document.getElementById("loginScreen").style.display = "none";
-    log("User authenticated: " + u);
+  if(u==="hasini.p77" && p==="Hasini9!"){
+
+    document.getElementById("loginScreen").style.display="none";
+
+    log("User authenticated: "+u);
+
   } else {
+
     alert("ACCESS DENIED ❌");
+
   }
+
+}
+
+/* LOGOUT */
+function logout(){
+
+  document.getElementById("loginScreen").style.display="flex";
+
+  document.getElementById("username").value="";
+  document.getElementById("password").value="";
+
+  log("User logged out");
+
 }
 
 /* THEME */
 function toggleTheme(){
+
   document.body.classList.toggle("light");
+
   log("Theme toggled");
+
 }
 
-/* LOG */
+/* LOG SYSTEM */
 function log(msg){
+
   const el=document.getElementById("log");
+
   const t=new Date().toLocaleTimeString();
+
   el.innerHTML=`[${t}] ${msg}<br>`+el.innerHTML;
+
 }
 
 /* GRAPH */
 const c=document.getElementById("chart");
+
 const ctx=c.getContext("2d");
+
 c.width=c.offsetWidth;
-c.height=220;
+c.height=240;
 
 let data=Array(60).fill(30);
 
 function draw(){
+
   ctx.clearRect(0,0,c.width,c.height);
+
   ctx.beginPath();
+
   ctx.strokeStyle="#ff4da6";
+
   ctx.lineWidth=2;
 
   for(let i=0;i<data.length;i++){
+
     let x=(i/data.length)*c.width;
+
     let y=c.height-(data[i]/100)*c.height;
 
-    if(i===0)ctx.moveTo(x,y);
+    if(i===0) ctx.moveTo(x,y);
     else ctx.lineTo(x,y);
+
   }
+
   ctx.stroke();
+
 }
 
+/* LIVE DATA */
 setInterval(()=>{
+
   let last=data[data.length-1];
-  let next=Math.max(5,Math.min(95,last+(Math.random()-0.5)*10));
+
+  let next=Math.max(
+    5,
+    Math.min(
+      95,
+      last+(Math.random()-0.5)*10
+    )
+  );
+
   data.push(next);
+
   data.shift();
+
   draw();
+
 },1000);
 
-/* SCANS */
+/* PASSWORD SCAN */
 function scanPassword(){
+
   let pw=document.getElementById("passwordInput").value;
-  let risk=!pw?80:(pw.length<8?40:20);
+
+  let risk=!pw ? 80 : (pw.length<8 ? 40 : 20);
+
   document.getElementById("pw").style.width=risk+"%";
+
   data[data.length-1]=risk;
-  log("Password scan");
+
+  log("Password scan executed");
+
 }
 
+/* EMAIL SCAN */
 function scanEmail(){
+
   let e=document.getElementById("emailInput").value.toLowerCase();
-  let risk=(e.includes("urgent")?60:10);
+
+  let risk=0;
+
+  if(e.includes("urgent")) risk+=50;
+
+  if(e.includes("click")) risk+=40;
+
   document.getElementById("ph").style.width=risk+"%";
+
   data[data.length-1]=risk;
-  log("Email scan");
+
+  log("Email phishing scan executed");
+
 }
 
 /* SCORE */
 function generateScore(){
+
   let pw=document.getElementById("passwordInput").value;
+
   let e=document.getElementById("emailInput").value.toLowerCase();
 
-  let pwRisk=!pw?80:30;
-  let phRisk=e.includes("urgent")?60:10;
+  let pwRisk=!pw ? 80 : 30;
 
-  let score=Math.round(100-(pwRisk+phRisk)/2);
+  let phRisk=e.includes("urgent") ? 60 : 10;
 
-  document.getElementById("score").innerText="Score: "+score;
+  let score=Math.round(
+    100-(pwRisk+phRisk)/2
+  );
 
-  update(pwRisk,phRisk,100-score);
+  document.getElementById("score").innerText=
+    "SOC Security Score: "+score;
+
+  updateBars(
+    pwRisk,
+    phRisk,
+    100-score
+  );
+
   log("SOC score generated");
+
 }
 
-/* UPDATE */
-function update(pw,ph,sys){
+/* UPDATE BARS */
+function updateBars(pw,ph,sys){
+
   document.getElementById("pw").style.width=pw+"%";
+
   document.getElementById("ph").style.width=ph+"%";
+
   document.getElementById("sys").style.width=sys+"%";
 
   let alert=document.getElementById("alert");
 
-  if(sys>60)alert.innerHTML="<div class='alert high'>CRITICAL</div>";
-  else if(sys>30)alert.innerHTML="<div class='alert med'>MEDIUM</div>";
-  else alert.innerHTML="<div class='alert low'>SAFE</div>";
+  if(sys>60){
+
+    alert.innerHTML=
+      "<div class='alert high'>🚨 CRITICAL RISK DETECTED</div>";
+
+  }
+
+  else if(sys>30){
+
+    alert.innerHTML=
+      "<div class='alert med'>⚠️ MEDIUM RISK ACTIVITY</div>";
+
+  }
+
+  else{
+
+    alert.innerHTML=
+      "<div class='alert low'>🟢 SYSTEM STABLE</div>";
+
+  }
+
 }
 
-/* AI */
+/* AI REPORT */
 function generateAI(){
+
   let pw=document.getElementById("passwordInput").value;
+
   let e=document.getElementById("emailInput").value;
 
   let issues=[];
-  if(!pw||pw.length<8)issues.push("Weak password");
-  if(e.includes("urgent"))issues.push("Phishing risk");
+
+  if(!pw || pw.length<8)
+    issues.push("Weak password detected");
+
+  if(e.includes("urgent"))
+    issues.push("Phishing indicators detected");
+
+  if(e.includes("click"))
+    issues.push("Suspicious link language identified");
 
   document.getElementById("ai").innerText=
-  "REPORT\n\n- "+(issues.join("\n- ")||"No issues");
+`SOC INCIDENT REPORT
 
-  log("AI report generated");
+Threat Findings:
+- ${issues.join("\n- ") || "No threats detected"}
+
+Recommended Actions:
+- Enable MFA
+- Reset weak credentials
+- Monitor suspicious emails
+`;
+
+  log("AI SOC report generated");
+
 }
 
 draw();
