@@ -19,20 +19,12 @@ header {
   padding: 15px 20px;
   background: linear-gradient(90deg, #0f172a, #1e3a8a);
   border-bottom: 1px solid #1f2937;
-}
-
-.header-inner {
-  max-width: 1100px;
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 
 h1 {
   margin: 0;
   color: #38bdf8;
-  font-size: 22px;
 }
 
 /* FLOAT BUTTON */
@@ -48,14 +40,8 @@ h1 {
   border: none;
 
   background: #38bdf8;
-  color: black;
-
-  font-size: 18px;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 18px;
 }
 
 /* GRID */
@@ -65,10 +51,6 @@ h1 {
   padding: 25px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    "score log"
-    "password phishing"
-    "chart chart";
   gap: 20px;
 }
 
@@ -81,19 +63,25 @@ h1 {
 
 .card h2 {
   color: #38bdf8;
-  margin-top: 0;
 }
 
+/* INPUT FIX */
 input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-top: 10px;
   border-radius: 8px;
-  border: 1px solid #1f2937;
+  border: 1px solid #334155;
   background: #0f172a;
   color: white;
+  font-size: 16px;
 }
 
+input[type="number"] {
+  border: 2px solid #38bdf8;
+}
+
+/* BUTTON */
 button {
   margin-top: 10px;
   width: 100%;
@@ -109,8 +97,9 @@ button:hover {
   background: #0ea5e9;
 }
 
+/* LOG */
 #logPanel {
-  height: 220px;
+  height: 200px;
   overflow-y: auto;
   background: #0f172a;
   padding: 10px;
@@ -119,49 +108,22 @@ button:hover {
   font-size: 12px;
 }
 
+/* BARS */
 .bar {
   height: 18px;
   background: #1f2937;
   border-radius: 6px;
-  margin-bottom: 10px;
   overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .bar-fill {
   height: 100%;
   width: 0%;
-  transition: 0.4s;
   background: #38bdf8;
+  transition: 0.3s;
 }
 
-/* GRID AREAS */
-.card:nth-child(1) { grid-area: score; }
-.card:nth-child(2) { grid-area: log; }
-.card:nth-child(3) { grid-area: password; }
-.card:nth-child(4) { grid-area: phishing; }
-.card:nth-child(5) { grid-area: chart; }
-
-/* TERMINAL */
-body.terminal {
-  background: black;
-  color: #00ff88;
-}
-
-body.terminal .card {
-  background: black;
-  border: 1px solid #00ff88;
-}
-
-body.terminal button,
-body.terminal input {
-  background: black;
-  border: 1px solid #00ff88;
-  color: #00ff88;
-}
-
-body.terminal .bar-fill {
-  background: #00ff88;
-}
 </style>
 </head>
 
@@ -170,18 +132,20 @@ body.terminal .bar-fill {
 <button class="toggle-btn" onclick="toggleTerminal()">⟡</button>
 
 <header>
-  <div class="header-inner">
-    <h1>🔐 CyberSafe Hub Pro</h1>
-  </div>
+  <h1>🔐 CyberSafe Hub Pro</h1>
 </header>
 
 <div class="container">
 
-<!-- SCORE INPUT (NEW) -->
+<!-- SCORE INPUT -->
 <div class="card">
-  <h2>📊 Security Score Input</h2>
-  <input id="securityScore" type="number" placeholder="Enter score (0 - 100)" min="0" max="100">
+  <h2>📊 Security Score</h2>
+
+  <label>Enter score (0–100)</label>
+  <input id="securityScore" type="number" min="0" max="100" placeholder="Type number here">
+
   <button onclick="setScore()">Set Score</button>
+
   <div id="scoreResult"></div>
 </div>
 
@@ -214,7 +178,7 @@ body.terminal .bar-fill {
 <div class="card">
   <h2>📈 Risk Visualization</h2>
 
-  <p>Security Risk</p>
+  <p>Password Risk</p>
   <div class="bar"><div id="pwBar" class="bar-fill"></div></div>
 
   <p>Phishing Risk</p>
@@ -231,30 +195,22 @@ body.terminal .bar-fill {
 function addLog(msg) {
   const log = document.getElementById("logPanel");
   const time = new Date().toLocaleTimeString();
-  const div = document.createElement("div");
-  div.textContent = `[${time}] ${msg}`;
-  log.prepend(div);
+  log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
 }
 
-/* TERMINAL */
-function toggleTerminal() {
-  document.body.classList.toggle("terminal");
-  addLog("Terminal mode toggled");
-}
-
-/* NEW SCORE INPUT */
+/* SCORE */
 function setScore() {
   const score = Number(document.getElementById("securityScore").value);
 
   if (isNaN(score) || score < 0 || score > 100) {
-    alert("Enter a number between 0 and 100");
+    alert("Enter 0–100");
     return;
   }
 
-  document.getElementById("scoreResult").textContent =
+  document.getElementById("scoreResult").innerText =
     "Security Score: " + score;
 
-  addLog("Security score set to " + score);
+  addLog("Score set: " + score);
 
   updateChart(score);
 }
@@ -272,8 +228,8 @@ function checkPassword() {
     if (!/[^A-Za-z0-9]/.test(pw)) risk += 30;
   }
 
-  document.getElementById("pwResult").textContent = "Password risk: " + risk;
-  addLog("Password analyzed");
+  document.getElementById("pwResult").innerText = "Password risk: " + risk;
+  addLog("Password checked");
 
   updateChart();
 }
@@ -287,35 +243,30 @@ function checkPhishing() {
   if (text.includes("click here")) risk += 40;
   if (text.includes("password")) risk += 20;
 
-  document.getElementById("phishResult").textContent = "Phishing risk: " + risk;
+  document.getElementById("phishResult").innerText = "Phishing risk: " + risk;
   addLog("Email scanned");
 
   updateChart();
 }
 
 /* CHART */
-function updateChart(scoreOverride) {
-
-  const score = scoreOverride ?? 50;
+function updateChart(score = 50) {
 
   const pw = document.getElementById("password").value;
   const email = document.getElementById("emailText").value.toLowerCase();
 
-  let pwRisk = 0;
-  if (!pw) pwRisk = 80;
-  else {
-    if (pw.length < 8) pwRisk += 30;
-    if (!/[A-Z]/.test(pw)) pwRisk += 20;
-    if (!/[0-9]/.test(pw)) pwRisk += 20;
-    if (!/[^A-Za-z0-9]/.test(pw)) pwRisk += 30;
-  }
+  let pwRisk = !pw ? 80 :
+    (pw.length < 8 ? 30 : 0) +
+    (!/[A-Z]/.test(pw) ? 20 : 0) +
+    (!/[0-9]/.test(pw) ? 20 : 0) +
+    (!/[^A-Za-z0-9]/.test(pw) ? 30 : 0);
 
   let phRisk = 0;
   if (email.includes("urgent")) phRisk += 40;
   if (email.includes("click here")) phRisk += 40;
   if (email.includes("password")) phRisk += 20;
 
-  const overall = Math.round((pwRisk + phRisk + (100 - score)) / 3);
+  let overall = Math.round((pwRisk + phRisk + (100 - score)) / 3);
 
   document.getElementById("pwBar").style.width = pwRisk + "%";
   document.getElementById("phishBar").style.width = phRisk + "%";
@@ -343,12 +294,16 @@ function exportPDF() {
 
   const win = window.open("", "", "width=800,height=600");
 
-  win.document.write(`
-    <h2>Incident Report</h2>
-    <pre>${log}</pre>
-  `);
-
+  win.document.write(`<h2>Incident Report</h2><pre>${log}</pre>`);
   win.print();
+}
+
+/* TERMINAL */
+function toggleTerminal() {
+  document.body.style.background =
+    document.body.style.background === "black" ? "#0a1020" : "black";
+
+  addLog("Terminal toggled");
 }
 
 updateChart();
