@@ -14,7 +14,7 @@ body {
   color: #e5e7eb;
 }
 
-/* HEADER FIXED */
+/* HEADER */
 header {
   padding: 15px 20px;
   background: linear-gradient(90deg, #0f172a, #1e3a8a);
@@ -32,18 +32,18 @@ header {
 h1 {
   margin: 0;
   color: #38bdf8;
-  font-size: 20px;
+  font-size: 22px;
 }
 
-/* SMALL BUTTON TOP RIGHT */
 .toggle-btn {
+  width: auto;
   padding: 6px 10px;
+  font-size: 12px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
   background: #38bdf8;
-  font-size: 12px;
 }
 
 .toggle-btn:hover {
@@ -111,6 +111,21 @@ button:hover {
   font-size: 12px;
 }
 
+.bar {
+  height: 18px;
+  background: #1f2937;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: 0.4s;
+  background: #38bdf8;
+}
+
 /* GRID AREAS */
 .card:nth-child(1) { grid-area: score; }
 .card:nth-child(2) { grid-area: log; }
@@ -139,7 +154,6 @@ body.terminal input {
 body.terminal .bar-fill {
   background: #00ff88;
 }
-
 </style>
 </head>
 
@@ -154,17 +168,23 @@ body.terminal .bar-fill {
 
 <div class="container">
 
+<!-- SCORE -->
 <div class="card">
   <h2>📊 Security Score</h2>
   <button onclick="calculateScore()">Calculate Score</button>
   <div id="scoreResult"></div>
 </div>
 
+<!-- LOG -->
 <div class="card">
   <h2>📋 Incident Log</h2>
   <div id="logPanel"></div>
+
+  <button onclick="exportCSV()">Export CSV</button>
+  <button onclick="exportPDF()">Export PDF</button>
 </div>
 
+<!-- PASSWORD -->
 <div class="card">
   <h2>🔑 Password Checker</h2>
   <input id="password" placeholder="Enter password">
@@ -172,6 +192,7 @@ body.terminal .bar-fill {
   <div id="pwResult"></div>
 </div>
 
+<!-- PHISHING -->
 <div class="card">
   <h2>🎣 Phishing Checker</h2>
   <input id="emailText" placeholder="Paste email text">
@@ -179,6 +200,7 @@ body.terminal .bar-fill {
   <div id="phishResult"></div>
 </div>
 
+<!-- CHART -->
 <div class="card">
   <h2>📈 Risk Visualization</h2>
 
@@ -273,6 +295,43 @@ function updateChart() {
   document.getElementById("pwBar").style.width = pwRisk + "%";
   document.getElementById("phishBar").style.width = phRisk + "%";
   document.getElementById("overallBar").style.width = overall + "%";
+}
+
+/* EXPORT CSV */
+function exportCSV() {
+  const log = document.getElementById("logPanel").innerText.trim();
+  if (!log) return alert("No logs to export");
+
+  const rows = log.split("\n").map(l => `"${l}"`).join("\n");
+
+  const blob = new Blob([rows], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "incident_log.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  addLog("CSV exported");
+}
+
+/* EXPORT PDF */
+function exportPDF() {
+  const log = document.getElementById("logPanel").innerText.trim();
+  if (!log) return alert("No logs to export");
+
+  const win = window.open("", "", "width=800,height=600");
+
+  win.document.write(`
+    <h2>CyberSafe Hub Incident Report</h2>
+    <pre>${log}</pre>
+  `);
+
+  win.print();
+
+  addLog("PDF exported");
 }
 
 updateChart();
