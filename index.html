@@ -13,7 +13,6 @@ body{
   font-family:Inter,sans-serif;
   background:#05010a;
   color:#fbcfe8;
-  transition:0.3s;
 }
 
 /* LIGHT MODE */
@@ -28,11 +27,7 @@ body.light .topbar{
   border-color:#f9a8d4;
 }
 
-body.light canvas{
-  background:white;
-}
-
-/* LOGIN */
+/* LOGIN SCREEN */
 #loginScreen{
   position:fixed;
   inset:0;
@@ -49,7 +44,6 @@ body.light canvas{
   border-radius:14px;
   border:1px solid #3b0a2a;
   background:#120012;
-  box-shadow:0 0 25px rgba(255,77,166,0.2);
 }
 
 .loginBox h2{
@@ -57,6 +51,7 @@ body.light canvas{
   color:#ff4da6;
 }
 
+/* INPUTS */
 input{
   width:100%;
   padding:12px;
@@ -68,20 +63,17 @@ input{
   box-sizing:border-box;
 }
 
+/* BUTTONS */
 button{
   width:100%;
   padding:11px;
   margin-top:10px;
-  background:linear-gradient(90deg,#ff4da6,#ff1f8f);
+  background:#ff4da6;
   border:none;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
   color:white;
-}
-
-button:hover{
-  filter:brightness(1.1);
 }
 
 /* TOPBAR */
@@ -97,7 +89,6 @@ button:hover{
 .logo{
   color:#ff4da6;
   font-weight:700;
-  font-size:18px;
 }
 
 .topButtons{
@@ -114,10 +105,6 @@ button:hover{
   background:#1a0010;
   color:#ff4da6;
   cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0;
 }
 
 /* GRID */
@@ -128,6 +115,7 @@ button:hover{
   padding:14px;
 }
 
+/* PANELS */
 .panel{
   background:#120012;
   border:1px solid #3b0a2a;
@@ -139,9 +127,9 @@ h2{
   font-size:12px;
   color:#ff4da6;
   text-transform:uppercase;
-  letter-spacing:1px;
 }
 
+/* LOG */
 #log{
   height:220px;
   overflow-y:auto;
@@ -149,47 +137,31 @@ h2{
   font-size:12px;
 }
 
+/* BARS */
 .bar{
   height:10px;
   background:#2a001a;
   border-radius:999px;
   overflow:hidden;
-  margin:8px 0 12px;
 }
 
 .fill{
   height:100%;
   width:0%;
   background:#ff4da6;
-  transition:0.4s;
 }
 
-canvas{
-  width:100%;
-  height:240px;
-  background:#1a0010;
-  border-radius:10px;
-  border:1px solid #3b0a2a;
-}
-
+/* CHAT */
 #chatBox{
-  height:220px;
+  height:200px;
   overflow-y:auto;
   background:#1a0010;
-  border:1px solid #3b0a2a;
   border-radius:10px;
   padding:10px;
-  font-size:12px;
 }
 
-.user{color:#ffb6d9;margin-bottom:8px;}
-.bot{color:#ffffff;margin-bottom:14px;}
-
-.status{
-  color:#4ade80;
-  font-size:13px;
-  font-weight:bold;
-}
+.user{color:#ffb6d9;}
+.bot{color:white;}
 
 </style>
 </head>
@@ -215,9 +187,6 @@ canvas{
 
   <div class="topButtons">
 
-    <div class="status">🟢 LIVE</div>
-
-    <!-- 🌍 ATTACK MAP BUTTON -->
     <button class="circleBtn" onclick="window.location.href='attack-map.html'">🌍</button>
 
     <button class="circleBtn" onclick="toggleTheme()">🌓</button>
@@ -228,23 +197,17 @@ canvas{
 
 </div>
 
-<!-- REST OF YOUR DASHBOARD (UNCHANGED FEATURES) -->
+<!-- DASHBOARD -->
 <div class="container">
 
   <div class="panel">
-    <h2>Live Risk Stream</h2>
-    <canvas id="chart"></canvas>
-  </div>
-
-  <div class="panel">
     <h2>Security Scanner</h2>
-    <input id="passwordInput" placeholder="Enter password">
-    <button onclick="scanPassword()">Password Scan</button>
+    <input id="passwordInput" placeholder="Password">
+    <button onclick="scanPassword()">Scan</button>
 
-    <input id="emailInput" placeholder="Paste email text">
-    <button onclick="scanEmail()">Phishing Scan</button>
+    <input id="emailInput" placeholder="Email text">
+    <button onclick="scanEmail()">Scan Email</button>
 
-    <button onclick="generateScore()">Generate SOC Score</button>
     <div id="score"></div>
   </div>
 
@@ -256,24 +219,21 @@ canvas{
   <div class="panel">
     <h2>Risk Metrics</h2>
 
-    <div>Password Risk</div>
+    <div>Password</div>
     <div class="bar"><div id="pw" class="fill"></div></div>
 
-    <div>Phishing Risk</div>
+    <div>Phishing</div>
     <div class="bar"><div id="ph" class="fill"></div></div>
 
-    <div>System Risk</div>
-    <div class="bar"><div id="sys" class="fill"></div></div>
-
-    <div id="alert"></div>
   </div>
 
   <div class="panel">
-    <h2>AI SOC Analyst Chat</h2>
+    <h2>AI Analyst</h2>
 
     <div id="chatBox"></div>
-    <input id="chatInput" placeholder="Ask the AI analyst...">
+    <input id="chatInput" placeholder="Ask AI...">
     <button onclick="sendChat()">Send</button>
+
   </div>
 
 </div>
@@ -302,18 +262,29 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* CHATBOT (kept simple + working) */
+/* SCANS */
+function scanPassword(){
+  let pw=document.getElementById("passwordInput").value;
+  document.getElementById("pw").style.width = pw.length>8 ? "20%" : "70%";
+}
+
+function scanEmail(){
+  let e=document.getElementById("emailInput").value.toLowerCase();
+  document.getElementById("ph").style.width = e.includes("urgent") ? "80%" : "20%";
+}
+
+/* CHAT */
 function sendChat(){
   const input=document.getElementById("chatInput");
   const chat=document.getElementById("chatBox");
-  const msg=input.value.toLowerCase();
+
+  let msg=input.value.toLowerCase();
   if(!msg) return;
 
-  let res="AI SOC Analyst recommends continued monitoring.";
+  let res="Monitoring system activity.";
 
-  if(msg.includes("phishing")) res="Phishing attack detected pattern analysis suggests email filtering.";
-  if(msg.includes("password")) res="Use MFA and strong passwords (12+ chars).";
-  if(msg.includes("incident")) res="Isolate system and review logs.";
+  if(msg.includes("phishing")) res="Phishing detected patterns.";
+  if(msg.includes("password")) res="Use strong passwords + MFA.";
 
   chat.innerHTML += `<div class="user">You: ${msg}</div><div class="bot">AI: ${res}</div>`;
   input.value="";
