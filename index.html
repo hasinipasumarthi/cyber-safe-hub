@@ -8,10 +8,6 @@
 
 <style>
 
-/* =========================
-   BASE THEME
-========================= */
-
 body{
   margin:0;
   font-family:Inter,sans-serif;
@@ -24,10 +20,6 @@ body.light{
   background:#fff0f6;
   color:#4a044e;
 }
-
-/* =========================
-   LOGIN SCREEN
-========================= */
 
 #loginScreen{
   position:fixed;
@@ -50,12 +42,7 @@ body.light{
 .loginBox h2{
   text-align:center;
   color:#ff4da6;
-  margin-top:0;
 }
-
-/* =========================
-   INPUTS + BUTTONS
-========================= */
 
 input{
   width:100%;
@@ -80,10 +67,6 @@ button{
   color:white;
 }
 
-/* =========================
-   TOP BAR
-========================= */
-
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -91,15 +74,11 @@ button{
   padding:12px 20px;
   background:#120012;
   border-bottom:1px solid #3b0a2a;
-  position:sticky;
-  top:0;
-  z-index:100;
 }
 
 .logo{
-  font-weight:700;
-  font-size:18px;
   color:#ff4da6;
+  font-weight:700;
 }
 
 .topButtons{
@@ -116,14 +95,7 @@ button{
   background:#1a0010;
   color:#ff4da6;
   cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
-
-/* =========================
-   GRID
-========================= */
 
 .container{
   display:grid;
@@ -131,10 +103,6 @@ button{
   gap:14px;
   padding:14px;
 }
-
-/* =========================
-   PANELS
-========================= */
 
 .panel{
   background:#120012;
@@ -150,20 +118,12 @@ h2{
   margin-top:0;
 }
 
-/* =========================
-   LOG
-========================= */
-
 #log{
   height:220px;
   overflow-y:auto;
   font-family:monospace;
   font-size:12px;
 }
-
-/* =========================
-   RISK BARS
-========================= */
 
 .bar{
   height:10px;
@@ -180,10 +140,6 @@ h2{
   transition:0.4s;
 }
 
-/* =========================
-   GRAPH
-========================= */
-
 canvas{
   width:100%;
   height:240px;
@@ -191,10 +147,6 @@ canvas{
   border-radius:10px;
   border:1px solid #3b0a2a;
 }
-
-/* =========================
-   CHAT
-========================= */
 
 #chatBox{
   height:200px;
@@ -222,7 +174,7 @@ canvas{
   </div>
 </div>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
 
   <div class="logo">CyberSafe SOC Dashboard</div>
@@ -231,16 +183,14 @@ canvas{
 
     <div class="status">🟢 LIVE</div>
 
-    <!-- 🌍 ATTACK MAP BUTTON -->
     <button class="circleBtn" onclick="window.location.href='attack-map.html'">🌍</button>
-
     <button class="circleBtn" onclick="toggleTheme()">🌓</button>
     <button class="circleBtn" onclick="logout()">🚪</button>
 
   </div>
 </div>
 
-<!-- MAIN DASHBOARD -->
+<!-- DASHBOARD -->
 <div class="container">
 
   <div class="panel">
@@ -256,8 +206,6 @@ canvas{
 
     <input id="emailInput" placeholder="Email text">
     <button onclick="scanEmail()">Phishing Scan</button>
-
-    <div id="score"></div>
   </div>
 
   <div class="panel">
@@ -289,6 +237,15 @@ canvas{
 
 <script>
 
+let loggedIn=false;
+
+/* LOG SYSTEM */
+function log(msg){
+  const el=document.getElementById("log");
+  const t=new Date().toLocaleTimeString();
+  el.innerHTML=`[${t}] ${msg}<br>` + el.innerHTML;
+}
+
 /* LOGIN */
 function login(){
   const u=document.getElementById("username").value;
@@ -296,6 +253,8 @@ function login(){
 
   if(u==="hasini.p77" && p==="Hasini9!"){
     document.getElementById("loginScreen").style.display="none";
+    loggedIn=true;
+    log("User authenticated");
   } else {
     alert("ACCESS DENIED");
   }
@@ -304,55 +263,26 @@ function login(){
 /* LOGOUT */
 function logout(){
   document.getElementById("loginScreen").style.display="flex";
+  loggedIn=false;
 }
 
 /* THEME */
 function toggleTheme(){
   document.body.classList.toggle("light");
+  log("Theme toggled");
 }
-
-/* GRAPH */
-const c=document.getElementById("chart");
-const ctx=c.getContext("2d");
-
-c.width=c.offsetWidth;
-c.height=240;
-
-let data=Array(60).fill(30);
-
-function draw(){
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.beginPath();
-  ctx.strokeStyle="#ff4da6";
-
-  for(let i=0;i<data.length;i++){
-    let x=(i/data.length)*c.width;
-    let y=c.height-(data[i]/100)*c.height;
-
-    if(i===0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
-  }
-
-  ctx.stroke();
-}
-
-setInterval(()=>{
-  let last=data[data.length-1];
-  let next=Math.max(5,Math.min(95,last+(Math.random()-0.5)*10));
-  data.push(next);
-  data.shift();
-  draw();
-},1000);
 
 /* SCANS */
 function scanPassword(){
   let pw=document.getElementById("passwordInput").value;
   document.getElementById("pw").style.width=pw.length>8?"20%":"70%";
+  log("Password scan executed");
 }
 
 function scanEmail(){
   let e=document.getElementById("emailInput").value.toLowerCase();
   document.getElementById("ph").style.width=e.includes("urgent")?"80%":"20%";
+  log("Email phishing scan executed");
 }
 
 /* CHAT */
@@ -364,14 +294,12 @@ function sendChat(){
   if(!msg) return;
 
   let res="Monitoring system activity.";
-  if(msg.includes("phishing")) res="Phishing detected.";
+  if(msg.includes("phishing")) res="Phishing detected patterns.";
   if(msg.includes("password")) res="Use MFA.";
 
   chat.innerHTML+=`<div class="user">You: ${msg}</div><div class="bot">AI: ${res}</div>`;
   input.value="";
 }
-
-draw();
 
 </script>
 
