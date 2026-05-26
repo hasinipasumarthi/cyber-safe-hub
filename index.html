@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberSafe Hub</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: white;
+    }
+
+    header {
+      background: #111827;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #38bdf8;
+    }
+
+    nav {
+      background: #1f2937;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+    }
+
+    section {
+      padding: 30px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+    .password-box {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111827;
+      border-radius: 10px;
+    }
+
+    input {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .strength {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #111827;
+      margin-top: 30px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🔐 CyberSafe Hub</h1>
+  <p>Learn how to stay safe online</p>
+</header>
+
+<nav>
+  <a href="#threats">Threats</a>
+  <a href="#password">Password Tool</a>
+</nav>
+
+<section id="intro">
+  <h2>Welcome</h2>
+  <p>
+    Cybersecurity is about protecting systems, networks, and data from digital attacks.
+    This site teaches basic threats and how to protect yourself.
+  </p>
+</section>
+
+<section id="threats">
+  <h2>Common Cyber Threats</h2>
+
+  <div class="card">
+    <h3>🎣 Phishing</h3>
+    <p>Fake emails or messages that trick you into giving personal info.</p>
+  </div>
+
+  <div class="card">
+    <h3>🦠 Malware</h3>
+    <p>Malicious software that can damage your device or steal data.</p>
+  </div>
+
+  <div class="card">
+    <h3>🔑 Weak Passwords</h3>
+    <p>Easy passwords make it simple for hackers to access your accounts.</p>
+  </div>
+</section>
+
+<section id="password">
+  <h2>Password Strength Checker</h2>
+
+  <div class="password-box">
+    <p>Type a password below:</p>
+    <input type="text" id="passwordInput" oninput="checkStrength()" placeholder="Enter password">
+
+    <div class="strength" id="strengthText"></div>
+  </div>
+</section>
+
+<footer>
+  CyberSafe Hub © 2026 | Educational Cybersecurity Project
+</footer>
+
+<script>
+  function checkStrength() {
+    const password = document.getElementById("passwordInput").value;
+    const strengthText = document.getElementById("strengthText");
+
+    let strength = 0;
+
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+    if (password.length === 0) {
+      strengthText.textContent = "";
+    } else if (strength <= 1) {
+      strengthText.textContent = "Weak password ❌";
+      strengthText.style.color = "red";
+    } else if (strength === 2 || strength === 3) {
+      strengthText.textContent = "Medium password ⚠️";
+      strengthText.style.color = "orange";
+    } else {
+      strengthText.textContent = "Strong password ✅";
+      strengthText.style.color = "lightgreen";
+    }
+  }
+</script>
+
+</body>
+</html>
