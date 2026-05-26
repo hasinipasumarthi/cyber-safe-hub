@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SOC Cyber Dashboard Pro</title>
+<title>CyberSafe Hub Pro</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -18,14 +18,32 @@ body {
 .topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 20px;
   background: #0b1220;
   border-bottom: 1px solid #1f2937;
 }
 
-.brand {
+/* LOGO RESTORED */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
   color: #38bdf8;
+  font-size: 16px;
+}
+
+.logo-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
+  color: black;
 }
 
 /* GRID */
@@ -109,9 +127,14 @@ canvas {
 
 <body>
 
+<!-- TOP BAR WITH LOGO -->
 <div class="topbar">
-  <div class="brand">SOC Security Dashboard</div>
-  <div>🟢 LIVE MONITORING</div>
+  <div class="logo">
+    <div class="logo-badge">CS</div>
+    CyberSafe Hub Pro
+  </div>
+
+  <div>🟢 SOC LIVE</div>
 </div>
 
 <div class="container">
@@ -141,8 +164,6 @@ canvas {
 <div class="panel">
   <h2>Event Log</h2>
   <div id="log"></div>
-  <button onclick="exportCSV()">Export CSV</button>
-  <button onclick="exportPDF()">Export PDF</button>
 </div>
 
 <!-- RISK BARS -->
@@ -179,7 +200,7 @@ function log(msg) {
   el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
 }
 
-/* GRAPH SETUP */
+/* GRAPH */
 const canvas = document.getElementById("chart");
 const ctx = canvas.getContext("2d");
 canvas.width = canvas.offsetWidth;
@@ -205,10 +226,9 @@ function draw() {
   ctx.stroke();
 }
 
-/* LIVE STREAM */
 setInterval(() => {
   let last = data[data.length-1];
-  let change = (Math.random()-0.5)*12;
+  let change = (Math.random()-0.5)*10;
   let next = Math.max(5,Math.min(95,last+change));
 
   data.push(next);
@@ -247,7 +267,7 @@ function checkPhishing() {
   log("Email scan executed");
 }
 
-/* SCORE ENGINE */
+/* SCORE */
 function generateScore() {
   const pw = document.getElementById("password").value;
   const e = document.getElementById("email").value.toLowerCase();
@@ -291,29 +311,10 @@ function generateSummary() {
   if (e.includes("urgent")) issues.push("Suspicious email pattern");
 
   document.getElementById("aiSummary").innerText =
-    "INCIDENT REPORT\n\n" +
-    "Findings:\n- " + (issues.join("\n- ") || "No threats detected");
+    "INCIDENT REPORT\n\nFindings:\n- " +
+    (issues.join("\n- ") || "No threats detected");
 
   log("AI summary generated");
-}
-
-/* EXPORT */
-function exportCSV() {
-  const logData = document.getElementById("log").innerText;
-  const blob = new Blob([logData], {type:"text/csv"});
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "log.csv";
-  a.click();
-}
-
-function exportPDF() {
-  const logData = document.getElementById("log").innerText;
-  const w = window.open();
-  w.document.write("<pre>"+logData+"</pre>");
-  w.print();
 }
 
 draw();
