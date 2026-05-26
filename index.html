@@ -79,6 +79,15 @@
       font-weight: bold;
     }
 
+    #scanLog {
+      font-family: monospace;
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 8px;
+      min-height: 120px;
+      color: #38bdf8;
+    }
+
     footer {
       text-align: center;
       padding: 20px;
@@ -113,18 +122,32 @@
     <div class="result" id="phishResult"></div>
   </div>
 
-  <!-- SECURITY TIPS -->
+  <!-- SECURITY SCORE -->
+  <div class="card">
+    <h2>📊 Security Score</h2>
+    <button onclick="calculateScore()">Calculate Score</button>
+    <div class="result" id="scoreResult"></div>
+  </div>
+
+  <!-- LIVE SCAN -->
+  <div class="card">
+    <h2>🖥 Live Security Scan</h2>
+    <div id="scanLog"></div>
+  </div>
+
+  <!-- TIPS -->
   <div class="card">
     <h2>💡 Security Tips</h2>
     <p>✔ Use unique passwords for every account</p>
     <p>✔ Never click suspicious links</p>
     <p>✔ Enable 2-factor authentication</p>
-    <p>✔ Watch for urgent/scam language in emails</p>
+    <p>✔ Watch for urgent scam emails</p>
   </div>
 
 </div>
 
 <script>
+
 function checkPassword() {
   const pw = document.getElementById("password").value;
   const out = document.getElementById("pwResult");
@@ -166,10 +189,60 @@ function checkPhishing() {
     out.textContent = "⚠️ Likely Phishing Email";
     out.style.color = "#ef4444";
   } else {
-    out.textContent = "✔ Looks Safe (but still be careful)";
+    out.textContent = "✔ Looks Safe";
     out.style.color = "#22c55e";
   }
 }
+
+function calculateScore() {
+  const pw = document.getElementById("password").value;
+  const email = document.getElementById("emailText").value.toLowerCase();
+
+  let score = 100;
+
+  if (!pw || pw.length < 8) score -= 30;
+  if (!/[A-Z]/.test(pw)) score -= 10;
+  if (!/[0-9]/.test(pw)) score -= 10;
+  if (!/[^A-Za-z0-9]/.test(pw)) score -= 10;
+
+  if (email.includes("urgent") || email.includes("click here")) score -= 20;
+
+  const out = document.getElementById("scoreResult");
+
+  if (score >= 80) {
+    out.textContent = "Security Score: " + score + " (Good ✔)";
+    out.style.color = "#22c55e";
+  } else if (score >= 50) {
+    out.textContent = "Security Score: " + score + " (Medium ⚠️)";
+    out.style.color = "#f59e0b";
+  } else {
+    out.textContent = "Security Score: " + score + " (Risky ❌)";
+    out.style.color = "#ef4444";
+  }
+}
+
+const scanMessages = [
+  "Scanning system files...",
+  "Checking password strength...",
+  "Analyzing email patterns...",
+  "Detecting phishing signatures...",
+  "No threats detected ✔"
+];
+
+let i = 0;
+
+function runScan() {
+  const log = document.getElementById("scanLog");
+
+  if (i < scanMessages.length) {
+    log.innerHTML += scanMessages[i] + "<br>";
+    i++;
+    setTimeout(runScan, 1200);
+  }
+}
+
+runScan();
+
 </script>
 
 </body>
