@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SOC Security Dashboard</title>
+<title>SOC Live Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -14,247 +14,202 @@ body {
   color: #d1d5db;
 }
 
-/* TOP BAR (SOC STYLE) */
+/* TOP BAR */
 .topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 12px 20px;
   background: #0b1220;
   border-bottom: 1px solid #1f2937;
+  display: flex;
+  justify-content: space-between;
 }
 
 .brand {
   color: #38bdf8;
-  font-weight: 700;
+  font-weight: bold;
 }
 
-.status {
-  display: flex;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.badge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #111827;
-  border: 1px solid #1f2937;
-}
-
-.badge.green { color: #22c55e; }
-.badge.yellow { color: #f59e0b; }
-.badge.red { color: #ef4444; }
-
-/* LAYOUT */
+/* GRID */
 .container {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 15px;
-  padding: 15px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 12px;
 }
 
-/* PANELS */
 .panel {
   background: #0b1220;
   border: 1px solid #1f2937;
   border-radius: 10px;
-  padding: 15px;
+  padding: 12px;
 }
 
-.panel h2 {
-  font-size: 14px;
+h2 {
+  font-size: 13px;
   color: #38bdf8;
   margin-top: 0;
   text-transform: uppercase;
 }
 
 /* INPUTS */
-input {
+input, button {
   width: 100%;
   padding: 10px;
   margin-top: 8px;
-  background: #050b18;
-  border: 1px solid #1f2937;
-  color: white;
   border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #050b18;
+  color: white;
 }
 
 button {
-  width: 100%;
-  margin-top: 8px;
-  padding: 10px;
   background: #38bdf8;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: bold;
 }
 
 button:hover {
   background: #0ea5e9;
 }
 
-/* LOG STREAM (SOC STYLE) */
-.log {
-  height: 260px;
+/* LOG */
+#log {
+  height: 220px;
   overflow-y: auto;
   font-family: monospace;
   font-size: 12px;
+}
+
+/* GRAPH */
+canvas {
+  width: 100%;
+  height: 220px;
   background: #050b18;
-  padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #1f2937;
-}
-
-/* ALERT BOX */
-.alert {
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  border-left: 4px solid;
-  font-size: 12px;
-}
-
-.high { border-color: #ef4444; background: rgba(239,68,68,0.1); }
-.medium { border-color: #f59e0b; background: rgba(245,158,11,0.1); }
-.low { border-color: #22c55e; background: rgba(34,197,94,0.1); }
-
-/* BARS */
-.bar {
-  height: 10px;
-  background: #1f2937;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 6px 0 10px;
-}
-
-.fill {
-  height: 100%;
-  width: 0%;
-  background: #38bdf8;
-  transition: 0.3s;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
-  <div class="brand">SOC Security Console</div>
-
-  <div class="status">
-    <div class="badge green">SYSTEM ONLINE</div>
-    <div class="badge yellow">3 ALERTS</div>
-    <div class="badge red">0 CRITICAL</div>
-  </div>
+  <div class="brand">SOC Live Monitoring Console</div>
+  <div>🟢 LIVE</div>
 </div>
 
-<!-- DASHBOARD -->
 <div class="container">
 
-<!-- LOG STREAM -->
+<!-- LIVE GRAPH -->
 <div class="panel">
-  <h2>Live Event Stream</h2>
-  <div id="log" class="log"></div>
+  <h2>📈 Real-Time Security Risk</h2>
+  <canvas id="chart"></canvas>
 </div>
 
-<!-- ANALYSIS -->
+<!-- CONTROLS -->
 <div class="panel">
   <h2>Security Scanner</h2>
 
-  <input id="password" placeholder="Password input">
-  <button onclick="scan()">Run Scan</button>
+  <input id="password" placeholder="Password">
+  <button onclick="scan()">Scan Password</button>
 
   <input id="email" placeholder="Email text">
-  <button onclick="phish()">Check Email</button>
+  <button onclick="scanEmail()">Scan Email</button>
 
-  <button onclick="generate()">Generate Score</button>
-
-  <div id="score"></div>
+  <button onclick="addRandomEvent()">Simulate Event</button>
 </div>
 
-<!-- RISK -->
+<!-- LOG -->
 <div class="panel">
-  <h2>Risk Overview</h2>
-
-  <div>Password Risk</div>
-  <div class="bar"><div id="pw" class="fill"></div></div>
-
-  <div>Phishing Risk</div>
-  <div class="bar"><div id="ph" class="fill"></div></div>
-
-  <div>System Risk</div>
-  <div class="bar"><div id="sys" class="fill"></div></div>
-
-  <div id="alert"></div>
+  <h2>Event Stream</h2>
+  <div id="log"></div>
 </div>
 
 </div>
 
 <script>
 
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
+
+canvas.width = canvas.offsetWidth;
+canvas.height = 220;
+
+let data = Array(50).fill(30);
+
+/* LOG */
 function log(msg) {
   const el = document.getElementById("log");
   const time = new Date().toLocaleTimeString();
   el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
 }
 
-/* PASSWORD */
+/* UPDATE GRAPH */
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#38bdf8";
+  ctx.lineWidth = 2;
+
+  for (let i = 0; i < data.length; i++) {
+    let x = (i / data.length) * canvas.width;
+    let y = canvas.height - (data[i] / 100) * canvas.height;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+
+  ctx.stroke();
+}
+
+/* LIVE UPDATE LOOP */
+setInterval(() => {
+  let last = data[data.length - 1];
+
+  // small random movement like real SOC telemetry
+  let change = (Math.random() - 0.5) * 10;
+  let next = Math.max(5, Math.min(95, last + change));
+
+  data.push(next);
+  data.shift();
+
+  draw();
+}, 1000);
+
+/* SCANS */
 function scan() {
   const pw = document.getElementById("password").value;
 
   let risk = !pw ? 80 :
     (pw.length < 8 ? 30 : 0) +
-    (!/[A-Z]/.test(pw) ? 20 : 0) +
-    (!/[0-9]/.test(pw) ? 20 : 0);
+    (!/[A-Z]/.test(pw) ? 20 : 0);
 
-  document.getElementById("pw").style.width = risk + "%";
+  data[data.length - 1] = risk;
 
-  log("Password scan completed");
+  log("Password scan executed");
 }
 
-/* PHISHING */
-function phish() {
+function scanEmail() {
   const e = document.getElementById("email").value.toLowerCase();
 
   let risk = 0;
   if (e.includes("urgent")) risk += 40;
   if (e.includes("click")) risk += 40;
 
-  document.getElementById("ph").style.width = risk + "%";
+  data[data.length - 1] = risk;
 
-  log("Email analyzed for phishing");
+  log("Email scan executed");
 }
 
-/* SCORE + ALERT ENGINE */
-function generate() {
-  const pw = document.getElementById("password").value;
-  const e = document.getElementById("email").value.toLowerCase();
+/* RANDOM SOC EVENT */
+function addRandomEvent() {
+  let eventRisk = Math.floor(Math.random() * 100);
+  data[data.length - 1] = eventRisk;
 
-  let pwRisk = (!pw ? 80 : 40);
-  let phRisk = (e.includes("urgent") ? 60 : 10);
-
-  let score = Math.round(100 - (pwRisk + phRisk) / 2);
-
-  document.getElementById("sys").style.width = (100 - score) + "%";
-
-  document.getElementById("score").innerHTML =
-    "Security Score: " + score;
-
-  let alertBox = document.getElementById("alert");
-
-  if (score < 40) {
-    alertBox.innerHTML = "<div class='alert high'>HIGH RISK INCIDENT DETECTED</div>";
-  } else if (score < 70) {
-    alertBox.innerHTML = "<div class='alert medium'>Suspicious activity detected</div>";
-  } else {
-    alertBox.innerHTML = "<div class='alert low'>System stable</div>";
-  }
-
-  log("SOC score generated");
+  log("Simulated security event detected");
 }
+
+draw();
 
 </script>
 
