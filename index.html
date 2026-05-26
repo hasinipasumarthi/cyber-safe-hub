@@ -25,7 +25,7 @@ header {
   max-width: 1100px;
   margin: auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
@@ -35,19 +35,37 @@ h1 {
   font-size: 22px;
 }
 
+/* FLOATING TERMINAL BUTTON */
 .toggle-btn {
-  width: auto;
-  padding: 6px 10px;
-  font-size: 12px;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
+
   background: #38bdf8;
+  color: black;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  transition: 0.2s;
 }
 
 .toggle-btn:hover {
   background: #0ea5e9;
+  transform: scale(1.1);
 }
 
 /* GRID */
@@ -159,10 +177,12 @@ body.terminal .bar-fill {
 
 <body>
 
+<!-- FLOATING BUTTON -->
+<button class="toggle-btn" onclick="toggleTerminal()">⟡</button>
+
 <header>
   <div class="header-inner">
     <h1>🔐 CyberSafe Hub Pro</h1>
-    <button class="toggle-btn" onclick="toggleTerminal()">Terminal Mode</button>
   </div>
 </header>
 
@@ -226,7 +246,7 @@ function addLog(msg) {
   log.prepend(div);
 }
 
-/* TERMINAL */
+/* TERMINAL MODE */
 function toggleTerminal() {
   document.body.classList.toggle("terminal");
   addLog("Terminal mode toggled");
