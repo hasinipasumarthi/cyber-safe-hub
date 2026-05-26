@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SOC Live Dashboard</title>
+<title>SOC Cyber Dashboard Pro</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -16,11 +16,11 @@ body {
 
 /* TOP BAR */
 .topbar {
+  display: flex;
+  justify-content: space-between;
   padding: 12px 20px;
   background: #0b1220;
   border-bottom: 1px solid #1f2937;
-  display: flex;
-  justify-content: space-between;
 }
 
 .brand {
@@ -36,6 +36,7 @@ body {
   padding: 12px;
 }
 
+/* PANELS */
 .panel {
   background: #0b1220;
   border: 1px solid #1f2937;
@@ -79,6 +80,22 @@ button:hover {
   font-size: 12px;
 }
 
+/* BARS */
+.bar {
+  height: 10px;
+  background: #1f2937;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 6px 0 10px;
+}
+
+.fill {
+  height: 100%;
+  width: 0%;
+  background: #38bdf8;
+  transition: 0.3s;
+}
+
 /* GRAPH */
 canvas {
   width: 100%;
@@ -93,15 +110,15 @@ canvas {
 <body>
 
 <div class="topbar">
-  <div class="brand">SOC Live Monitoring Console</div>
-  <div>🟢 LIVE</div>
+  <div class="brand">SOC Security Dashboard</div>
+  <div>🟢 LIVE MONITORING</div>
 </div>
 
 <div class="container">
 
-<!-- LIVE GRAPH -->
+<!-- GRAPH -->
 <div class="panel">
-  <h2>📈 Real-Time Security Risk</h2>
+  <h2>📈 Real-Time Risk Graph</h2>
   <canvas id="chart"></canvas>
 </div>
 
@@ -110,31 +127,50 @@ canvas {
   <h2>Security Scanner</h2>
 
   <input id="password" placeholder="Password">
-  <button onclick="scan()">Scan Password</button>
+  <button onclick="checkPassword()">Scan Password</button>
 
   <input id="email" placeholder="Email text">
-  <button onclick="scanEmail()">Scan Email</button>
+  <button onclick="checkPhishing()">Scan Email</button>
 
-  <button onclick="addRandomEvent()">Simulate Event</button>
+  <button onclick="generateScore()">Generate Security Score</button>
+
+  <div id="score"></div>
 </div>
 
 <!-- LOG -->
 <div class="panel">
-  <h2>Event Stream</h2>
+  <h2>Event Log</h2>
   <div id="log"></div>
+  <button onclick="exportCSV()">Export CSV</button>
+  <button onclick="exportPDF()">Export PDF</button>
+</div>
+
+<!-- RISK BARS -->
+<div class="panel">
+  <h2>Risk Metrics</h2>
+
+  <div>Password Risk</div>
+  <div class="bar"><div id="pw" class="fill"></div></div>
+
+  <div>Phishing Risk</div>
+  <div class="bar"><div id="ph" class="fill"></div></div>
+
+  <div>System Risk</div>
+  <div class="bar"><div id="sys" class="fill"></div></div>
+
+  <div id="alert"></div>
+</div>
+
+<!-- AI SUMMARY -->
+<div class="panel">
+  <h2>🧠 AI Incident Summary</h2>
+  <button onclick="generateSummary()">Generate Summary</button>
+  <pre id="aiSummary"></pre>
 </div>
 
 </div>
 
 <script>
-
-const canvas = document.getElementById("chart");
-const ctx = canvas.getContext("2d");
-
-canvas.width = canvas.offsetWidth;
-canvas.height = 220;
-
-let data = Array(50).fill(30);
 
 /* LOG */
 function log(msg) {
@@ -143,70 +179,141 @@ function log(msg) {
   el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
 }
 
-/* UPDATE GRAPH */
+/* GRAPH SETUP */
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
+canvas.width = canvas.offsetWidth;
+canvas.height = 220;
+
+let data = Array(60).fill(30);
+
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
   ctx.beginPath();
   ctx.strokeStyle = "#38bdf8";
   ctx.lineWidth = 2;
 
-  for (let i = 0; i < data.length; i++) {
-    let x = (i / data.length) * canvas.width;
-    let y = canvas.height - (data[i] / 100) * canvas.height;
+  for (let i=0;i<data.length;i++) {
+    let x = (i/data.length)*canvas.width;
+    let y = canvas.height - (data[i]/100)*canvas.height;
 
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
+    if (i==0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
   }
 
   ctx.stroke();
 }
 
-/* LIVE UPDATE LOOP */
+/* LIVE STREAM */
 setInterval(() => {
-  let last = data[data.length - 1];
-
-  // small random movement like real SOC telemetry
-  let change = (Math.random() - 0.5) * 10;
-  let next = Math.max(5, Math.min(95, last + change));
+  let last = data[data.length-1];
+  let change = (Math.random()-0.5)*12;
+  let next = Math.max(5,Math.min(95,last+change));
 
   data.push(next);
   data.shift();
 
   draw();
-}, 1000);
+},1000);
 
-/* SCANS */
-function scan() {
+/* PASSWORD */
+function checkPassword() {
   const pw = document.getElementById("password").value;
 
   let risk = !pw ? 80 :
     (pw.length < 8 ? 30 : 0) +
     (!/[A-Z]/.test(pw) ? 20 : 0);
 
-  data[data.length - 1] = risk;
+  document.getElementById("pw").style.width = risk + "%";
+
+  data[data.length-1] = risk;
 
   log("Password scan executed");
 }
 
-function scanEmail() {
+/* PHISHING */
+function checkPhishing() {
   const e = document.getElementById("email").value.toLowerCase();
 
   let risk = 0;
   if (e.includes("urgent")) risk += 40;
   if (e.includes("click")) risk += 40;
 
-  data[data.length - 1] = risk;
+  document.getElementById("ph").style.width = risk + "%";
+
+  data[data.length-1] = risk;
 
   log("Email scan executed");
 }
 
-/* RANDOM SOC EVENT */
-function addRandomEvent() {
-  let eventRisk = Math.floor(Math.random() * 100);
-  data[data.length - 1] = eventRisk;
+/* SCORE ENGINE */
+function generateScore() {
+  const pw = document.getElementById("password").value;
+  const e = document.getElementById("email").value.toLowerCase();
 
-  log("Simulated security event detected");
+  let pwRisk = !pw ? 80 : 40;
+  let phRisk = e.includes("urgent") ? 60 : 10;
+
+  let score = Math.round(100 - (pwRisk + phRisk)/2);
+
+  document.getElementById("score").innerText =
+    "Security Score: " + score;
+
+  data[data.length-1] = 100-score;
+
+  log("Security score generated");
+
+  updateBars(pwRisk,phRisk,100-score);
+}
+
+/* BARS */
+function updateBars(pw,ph,sys) {
+  document.getElementById("pw").style.width = pw + "%";
+  document.getElementById("ph").style.width = ph + "%";
+  document.getElementById("sys").style.width = sys + "%";
+
+  let alert = document.getElementById("alert");
+
+  if (sys > 60) alert.innerHTML = "🚨 HIGH RISK";
+  else if (sys > 30) alert.innerHTML = "⚠️ MEDIUM RISK";
+  else alert.innerHTML = "🟢 STABLE";
+}
+
+/* AI SUMMARY */
+function generateSummary() {
+  const pw = document.getElementById("password").value;
+  const e = document.getElementById("email").value.toLowerCase();
+
+  let issues = [];
+
+  if (!pw || pw.length < 8) issues.push("Weak password detected");
+  if (e.includes("urgent")) issues.push("Suspicious email pattern");
+
+  document.getElementById("aiSummary").innerText =
+    "INCIDENT REPORT\n\n" +
+    "Findings:\n- " + (issues.join("\n- ") || "No threats detected");
+
+  log("AI summary generated");
+}
+
+/* EXPORT */
+function exportCSV() {
+  const logData = document.getElementById("log").innerText;
+  const blob = new Blob([logData], {type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "log.csv";
+  a.click();
+}
+
+function exportPDF() {
+  const logData = document.getElementById("log").innerText;
+  const w = window.open();
+  w.document.write("<pre>"+logData+"</pre>");
+  w.print();
 }
 
 draw();
