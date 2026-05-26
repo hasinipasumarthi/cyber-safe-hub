@@ -18,8 +18,8 @@ body {
 header {
   padding: 15px 20px;
   background: linear-gradient(90deg, #0f172a, #1e3a8a);
-  border-bottom: 1px solid #1f2937;
   text-align: center;
+  border-bottom: 1px solid #1f2937;
 }
 
 h1 {
@@ -32,13 +32,10 @@ h1 {
   position: fixed;
   top: 15px;
   right: 15px;
-
   width: 40px;
   height: 40px;
-
   border-radius: 50%;
   border: none;
-
   background: #38bdf8;
   cursor: pointer;
   font-size: 18px;
@@ -65,23 +62,16 @@ h1 {
   color: #38bdf8;
 }
 
-/* INPUT FIX */
 input {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   margin-top: 10px;
   border-radius: 8px;
   border: 1px solid #334155;
   background: #0f172a;
   color: white;
-  font-size: 16px;
 }
 
-input[type="number"] {
-  border: 2px solid #38bdf8;
-}
-
-/* BUTTON */
 button {
   margin-top: 10px;
   width: 100%;
@@ -124,6 +114,28 @@ button:hover {
   transition: 0.3s;
 }
 
+/* TERMINAL MODE */
+body.terminal {
+  background: black;
+  color: #00ff88;
+}
+
+body.terminal .card {
+  background: black;
+  border: 1px solid #00ff88;
+}
+
+body.terminal button,
+body.terminal input {
+  background: black;
+  border: 1px solid #00ff88;
+  color: #00ff88;
+}
+
+body.terminal .bar-fill {
+  background: #00ff88;
+}
+
 </style>
 </head>
 
@@ -137,15 +149,10 @@ button:hover {
 
 <div class="container">
 
-<!-- SCORE INPUT -->
+<!-- SCORE -->
 <div class="card">
-  <h2>📊 Security Score</h2>
-
-  <label>Enter score (0–100)</label>
-  <input id="securityScore" type="number" min="0" max="100" placeholder="Type number here">
-
-  <button onclick="setScore()">Set Score</button>
-
+  <h2>📊 Security Score Engine</h2>
+  <button onclick="generateScore()">Generate Score</button>
   <div id="scoreResult"></div>
 </div>
 
@@ -153,7 +160,6 @@ button:hover {
 <div class="card">
   <h2>📋 Incident Log</h2>
   <div id="logPanel"></div>
-
   <button onclick="exportCSV()">Export CSV</button>
   <button onclick="exportPDF()">Export PDF</button>
 </div>
@@ -188,6 +194,13 @@ button:hover {
   <div class="bar"><div id="overallBar" class="bar-fill"></div></div>
 </div>
 
+<!-- AI SUMMARY -->
+<div class="card">
+  <h2>🧠 AI Incident Summary</h2>
+  <button onclick="generateSummary()">Generate Summary</button>
+  <pre id="aiSummary"></pre>
+</div>
+
 </div>
 
 <script>
@@ -198,20 +211,28 @@ function addLog(msg) {
   log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
 }
 
-/* SCORE */
-function setScore() {
-  const score = Number(document.getElementById("securityScore").value);
+/* SCORE ENGINE */
+function generateScore() {
+  const pw = document.getElementById("password").value;
+  const email = document.getElementById("emailText").value.toLowerCase();
 
-  if (isNaN(score) || score < 0 || score > 100) {
-    alert("Enter 0–100");
-    return;
-  }
+  let pwRisk = !pw ? 80 :
+    (pw.length < 8 ? 30 : 0) +
+    (!/[A-Z]/.test(pw) ? 20 : 0) +
+    (!/[0-9]/.test(pw) ? 20 : 0) +
+    (!/[^A-Za-z0-9]/.test(pw) ? 30 : 0);
+
+  let phRisk = 0;
+  if (email.includes("urgent")) phRisk += 40;
+  if (email.includes("click here")) phRisk += 40;
+  if (email.includes("password")) phRisk += 20;
+
+  let score = Math.max(0, 100 - (pwRisk + phRisk) / 2);
 
   document.getElementById("scoreResult").innerText =
-    "Security Score: " + score;
+    "Security Score: " + Math.round(score);
 
-  addLog("Score set: " + score);
-
+  addLog("Security score generated");
   updateChart(score);
 }
 
@@ -219,18 +240,14 @@ function setScore() {
 function checkPassword() {
   const pw = document.getElementById("password").value;
 
-  let risk = 0;
-  if (!pw) risk = 80;
-  else {
-    if (pw.length < 8) risk += 30;
-    if (!/[A-Z]/.test(pw)) risk += 20;
-    if (!/[0-9]/.test(pw)) risk += 20;
-    if (!/[^A-Za-z0-9]/.test(pw)) risk += 30;
-  }
+  let risk = !pw ? 80 :
+    (pw.length < 8 ? 30 : 0) +
+    (!/[A-Z]/.test(pw) ? 20 : 0) +
+    (!/[0-9]/.test(pw) ? 20 : 0) +
+    (!/[^A-Za-z0-9]/.test(pw) ? 30 : 0);
 
   document.getElementById("pwResult").innerText = "Password risk: " + risk;
-  addLog("Password checked");
-
+  addLog("Password analyzed");
   updateChart();
 }
 
@@ -245,12 +262,11 @@ function checkPhishing() {
 
   document.getElementById("phishResult").innerText = "Phishing risk: " + risk;
   addLog("Email scanned");
-
   updateChart();
 }
 
 /* CHART */
-function updateChart(score = 50) {
+function updateChart(score = 100) {
 
   const pw = document.getElementById("password").value;
   const email = document.getElementById("emailText").value.toLowerCase();
@@ -273,11 +289,40 @@ function updateChart(score = 50) {
   document.getElementById("overallBar").style.width = overall + "%";
 }
 
+/* AI SUMMARY */
+function generateSummary() {
+  const pw = document.getElementById("password").value;
+  const email = document.getElementById("emailText").value.toLowerCase();
+
+  let issues = [];
+
+  if (!pw || pw.length < 8) issues.push("Weak password detected");
+  if (email.includes("urgent") || email.includes("click here")) {
+    issues.push("Suspicious phishing indicators detected");
+  }
+
+  let summary = `
+INCIDENT REPORT
+
+Status: ${issues.length > 0 ? "HIGH RISK ⚠️" : "LOW RISK 🟢"}
+
+Findings:
+- ${issues.length ? issues.join("\n- ") : "No threats detected"}
+
+Recommendation:
+- Strengthen passwords
+- Avoid suspicious emails
+- Enable MFA
+`;
+
+  document.getElementById("aiSummary").innerText = summary;
+
+  addLog("AI incident summary generated");
+}
+
 /* EXPORT CSV */
 function exportCSV() {
   const log = document.getElementById("logPanel").innerText;
-  if (!log) return alert("No logs");
-
   const blob = new Blob([log], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
 
@@ -290,20 +335,15 @@ function exportCSV() {
 /* EXPORT PDF */
 function exportPDF() {
   const log = document.getElementById("logPanel").innerText;
-  if (!log) return alert("No logs");
-
   const win = window.open("", "", "width=800,height=600");
-
-  win.document.write(`<h2>Incident Report</h2><pre>${log}</pre>`);
+  win.document.write(`<pre>${log}</pre>`);
   win.print();
 }
 
 /* TERMINAL */
 function toggleTerminal() {
-  document.body.style.background =
-    document.body.style.background === "black" ? "#0a1020" : "black";
-
-  addLog("Terminal toggled");
+  document.body.classList.toggle("terminal");
+  addLog("Terminal mode toggled");
 }
 
 updateChart();
