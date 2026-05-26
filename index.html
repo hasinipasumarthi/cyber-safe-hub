@@ -21,13 +21,7 @@ body.light{
   color:#4a044e;
 }
 
-body.light .panel,
-body.light .topbar{
-  background:white;
-  border-color:#f9a8d4;
-}
-
-/* LOGIN SCREEN */
+/* LOGIN */
 #loginScreen{
   position:fixed;
   inset:0;
@@ -60,7 +54,6 @@ input{
   border:1px solid #3b0a2a;
   color:#fbcfe8;
   border-radius:8px;
-  box-sizing:border-box;
 }
 
 /* BUTTONS */
@@ -143,12 +136,22 @@ h2{
   background:#2a001a;
   border-radius:999px;
   overflow:hidden;
+  margin-bottom:8px;
 }
 
 .fill{
   height:100%;
   width:0%;
   background:#ff4da6;
+}
+
+/* GRAPH */
+canvas{
+  width:100%;
+  height:240px;
+  background:#1a0010;
+  border-radius:10px;
+  border:1px solid #3b0a2a;
 }
 
 /* CHAT */
@@ -181,16 +184,12 @@ h2{
 <!-- TOPBAR -->
 <div class="topbar">
 
-  <div class="logo">
-    CyberSafe SOC Dashboard
-  </div>
+  <div class="logo">CyberSafe SOC Dashboard</div>
 
   <div class="topButtons">
 
     <button class="circleBtn" onclick="window.location.href='attack-map.html'">🌍</button>
-
     <button class="circleBtn" onclick="toggleTheme()">🌓</button>
-
     <button class="circleBtn" onclick="logout()">🚪</button>
 
   </div>
@@ -200,33 +199,44 @@ h2{
 <!-- DASHBOARD -->
 <div class="container">
 
+  <!-- GRAPH -->
+  <div class="panel">
+    <h2>Live Risk Stream</h2>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- SCANNER -->
   <div class="panel">
     <h2>Security Scanner</h2>
+
     <input id="passwordInput" placeholder="Password">
-    <button onclick="scanPassword()">Scan</button>
+    <button onclick="scanPassword()">Password Scan</button>
 
     <input id="emailInput" placeholder="Email text">
-    <button onclick="scanEmail()">Scan Email</button>
+    <button onclick="scanEmail()">Phishing Scan</button>
 
     <div id="score"></div>
   </div>
 
+  <!-- INCIDENT LOG -->
   <div class="panel">
     <h2>Incident Log</h2>
     <div id="log"></div>
   </div>
 
+  <!-- RISKS -->
   <div class="panel">
     <h2>Risk Metrics</h2>
 
-    <div>Password</div>
+    <div>Password Risk</div>
     <div class="bar"><div id="pw" class="fill"></div></div>
 
-    <div>Phishing</div>
+    <div>Phishing Risk</div>
     <div class="bar"><div id="ph" class="fill"></div></div>
 
   </div>
 
+  <!-- CHATBOT -->
   <div class="panel">
     <h2>AI Analyst</h2>
 
@@ -262,6 +272,47 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
+/* LOG */
+function log(msg){
+  const el=document.getElementById("log");
+  const t=new Date().toLocaleTimeString();
+  el.innerHTML=`[${t}] ${msg}<br>`+el.innerHTML;
+}
+
+/* LIVE GRAPH */
+const c=document.getElementById("chart");
+const ctx=c.getContext("2d");
+
+c.width=c.offsetWidth;
+c.height=240;
+
+let data=Array(60).fill(30);
+
+function draw(){
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.beginPath();
+  ctx.strokeStyle="#ff4da6";
+  ctx.lineWidth=2;
+
+  for(let i=0;i<data.length;i++){
+    let x=(i/data.length)*c.width;
+    let y=c.height-(data[i]/100)*c.height;
+
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.stroke();
+}
+
+setInterval(()=>{
+  let last=data[data.length-1];
+  let next=Math.max(5,Math.min(95,last+(Math.random()-0.5)*10));
+  data.push(next);
+  data.shift();
+  draw();
+},1000);
+
 /* SCANS */
 function scanPassword(){
   let pw=document.getElementById("passwordInput").value;
@@ -283,12 +334,15 @@ function sendChat(){
 
   let res="Monitoring system activity.";
 
-  if(msg.includes("phishing")) res="Phishing detected patterns.";
-  if(msg.includes("password")) res="Use strong passwords + MFA.";
+  if(msg.includes("phishing")) res="Phishing detection active.";
+  if(msg.includes("password")) res="Use MFA and strong passwords.";
+  if(msg.includes("incident")) res="Isolate affected system.";
 
   chat.innerHTML += `<div class="user">You: ${msg}</div><div class="bot">AI: ${res}</div>`;
   input.value="";
 }
+
+draw();
 
 </script>
 
