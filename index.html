@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CyberSafe Hub Pro</title>
+<title>SOC Enterprise Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -14,37 +14,77 @@ body {
   color: #d1d5db;
 }
 
+/* LOGIN SCREEN */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  background: #050b18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loginBox {
+  width: 320px;
+  padding: 20px;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  background: #0b1220;
+}
+
+.loginBox h2 {
+  color: #38bdf8;
+  text-align: center;
+}
+
+select, input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #050b18;
+  border: 1px solid #1f2937;
+  color: white;
+  border-radius: 6px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #38bdf8;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 /* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 12px 20px;
   background: #0b1220;
   border-bottom: 1px solid #1f2937;
 }
 
-/* LOGO RESTORED */
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
   font-weight: 700;
   color: #38bdf8;
-  font-size: 16px;
 }
 
-.logo-badge {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: black;
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
 }
+
+.green { background: rgba(34,197,94,0.2); color: #22c55e; }
+.yellow { background: rgba(245,158,11,0.2); color: #f59e0b; }
+.red { background: rgba(239,68,68,0.2); color: #ef4444; }
 
 /* GRID */
 .container {
@@ -54,7 +94,6 @@ body {
   padding: 12px;
 }
 
-/* PANELS */
 .panel {
   background: #0b1220;
   border: 1px solid #1f2937;
@@ -63,31 +102,21 @@ body {
 }
 
 h2 {
-  font-size: 13px;
+  font-size: 12px;
   color: #38bdf8;
-  margin-top: 0;
   text-transform: uppercase;
+  margin-top: 0;
 }
 
 /* INPUTS */
-input, button {
+input, select {
   width: 100%;
   padding: 10px;
   margin-top: 8px;
-  border-radius: 6px;
-  border: 1px solid #1f2937;
   background: #050b18;
+  border: 1px solid #1f2937;
   color: white;
-}
-
-button {
-  background: #38bdf8;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button:hover {
-  background: #0ea5e9;
+  border-radius: 6px;
 }
 
 /* LOG */
@@ -104,7 +133,7 @@ button:hover {
   background: #1f2937;
   border-radius: 6px;
   overflow: hidden;
-  margin: 6px 0 10px;
+  margin: 6px 0;
 }
 
 .fill {
@@ -114,7 +143,18 @@ button:hover {
   transition: 0.3s;
 }
 
-/* GRAPH */
+/* ALERT FLASH */
+.alert {
+  padding: 8px;
+  margin-top: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.critical { background: rgba(239,68,68,0.15); border-left: 3px solid #ef4444; }
+.medium { background: rgba(245,158,11,0.15); border-left: 3px solid #f59e0b; }
+.safe { background: rgba(34,197,94,0.15); border-left: 3px solid #22c55e; }
+
 canvas {
   width: 100%;
   height: 220px;
@@ -127,194 +167,200 @@ canvas {
 
 <body>
 
-<!-- TOP BAR WITH LOGO -->
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="loginBox">
+    <h2>SOC LOGIN</h2>
+
+    <select id="role">
+      <option value="Analyst">Analyst</option>
+      <option value="Admin">Admin</option>
+    </select>
+
+    <input id="user" placeholder="Username">
+
+    <button onclick="login()">Enter SOC Dashboard</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">
-    <div class="logo-badge">CS</div>
-    CyberSafe Hub Pro
+    🔐 CyberSafe Hub SOC
   </div>
-
-  <div>🟢 SOC LIVE</div>
+  <div id="roleDisplay">Role: Guest</div>
 </div>
 
 <div class="container">
 
 <!-- GRAPH -->
 <div class="panel">
-  <h2>📈 Real-Time Risk Graph</h2>
+  <h2>Live Risk Stream</h2>
   <canvas id="chart"></canvas>
 </div>
 
-<!-- CONTROLS -->
+<!-- SCANNER -->
 <div class="panel">
   <h2>Security Scanner</h2>
 
   <input id="password" placeholder="Password">
-  <button onclick="checkPassword()">Scan Password</button>
+  <button onclick="scanPW()">Password Scan</button>
 
   <input id="email" placeholder="Email text">
-  <button onclick="checkPhishing()">Scan Email</button>
+  <button onclick="scanEmail()">Phishing Scan</button>
 
-  <button onclick="generateScore()">Generate Security Score</button>
+  <button onclick="generateScore()">Generate SOC Score</button>
 
   <div id="score"></div>
 </div>
 
 <!-- LOG -->
 <div class="panel">
-  <h2>Event Log</h2>
+  <h2>Incident Stream</h2>
   <div id="log"></div>
 </div>
 
-<!-- RISK BARS -->
+<!-- RISKS -->
 <div class="panel">
   <h2>Risk Metrics</h2>
 
-  <div>Password Risk</div>
+  <div>Password</div>
   <div class="bar"><div id="pw" class="fill"></div></div>
 
-  <div>Phishing Risk</div>
+  <div>Phishing</div>
   <div class="bar"><div id="ph" class="fill"></div></div>
 
-  <div>System Risk</div>
+  <div>System</div>
   <div class="bar"><div id="sys" class="fill"></div></div>
 
   <div id="alert"></div>
 </div>
 
-<!-- AI SUMMARY -->
+<!-- AI -->
 <div class="panel">
-  <h2>🧠 AI Incident Summary</h2>
-  <button onclick="generateSummary()">Generate Summary</button>
-  <pre id="aiSummary"></pre>
+  <h2>AI SOC Analyst</h2>
+  <button onclick="summary()">Generate Report</button>
+  <pre id="ai"></pre>
 </div>
 
 </div>
 
 <script>
 
+let role = "Guest";
+
+/* LOGIN */
+function login() {
+  role = document.getElementById("role").value;
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("roleDisplay").innerText = "Role: " + role;
+  log("User logged in as " + role);
+}
+
 /* LOG */
 function log(msg) {
   const el = document.getElementById("log");
-  const time = new Date().toLocaleTimeString();
-  el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
+  const t = new Date().toLocaleTimeString();
+  el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
 }
 
 /* GRAPH */
-const canvas = document.getElementById("chart");
-const ctx = canvas.getContext("2d");
-canvas.width = canvas.offsetWidth;
-canvas.height = 220;
+const c = document.getElementById("chart");
+const ctx = c.getContext("2d");
+c.width = c.offsetWidth;
+c.height = 220;
 
 let data = Array(60).fill(30);
 
 function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
+  ctx.clearRect(0,0,c.width,c.height);
   ctx.beginPath();
   ctx.strokeStyle = "#38bdf8";
-  ctx.lineWidth = 2;
 
   for (let i=0;i<data.length;i++) {
-    let x = (i/data.length)*canvas.width;
-    let y = canvas.height - (data[i]/100)*canvas.height;
+    let x = (i/data.length)*c.width;
+    let y = c.height - (data[i]/100)*c.height;
 
-    if (i==0) ctx.moveTo(x,y);
+    if (i===0) ctx.moveTo(x,y);
     else ctx.lineTo(x,y);
   }
-
   ctx.stroke();
 }
 
 setInterval(() => {
   let last = data[data.length-1];
-  let change = (Math.random()-0.5)*10;
-  let next = Math.max(5,Math.min(95,last+change));
-
+  let next = Math.max(5, Math.min(95, last + (Math.random()-0.5)*10));
   data.push(next);
   data.shift();
-
   draw();
 },1000);
 
-/* PASSWORD */
-function checkPassword() {
-  const pw = document.getElementById("password").value;
+/* SCANS */
+function scanPW() {
+  let pw = document.getElementById("password").value;
+  let risk = !pw ? 80 : (pw.length<8?40:20);
 
-  let risk = !pw ? 80 :
-    (pw.length < 8 ? 30 : 0) +
-    (!/[A-Z]/.test(pw) ? 20 : 0);
-
-  document.getElementById("pw").style.width = risk + "%";
-
-  data[data.length-1] = risk;
-
+  document.getElementById("pw").style.width = risk+"%";
+  data[data.length-1]=risk;
   log("Password scan executed");
 }
 
-/* PHISHING */
-function checkPhishing() {
-  const e = document.getElementById("email").value.toLowerCase();
+function scanEmail() {
+  let e = document.getElementById("email").value.toLowerCase();
+  let risk = (e.includes("urgent")?60:10);
 
-  let risk = 0;
-  if (e.includes("urgent")) risk += 40;
-  if (e.includes("click")) risk += 40;
-
-  document.getElementById("ph").style.width = risk + "%";
-
-  data[data.length-1] = risk;
-
+  document.getElementById("ph").style.width = risk+"%";
+  data[data.length-1]=risk;
   log("Email scan executed");
 }
 
-/* SCORE */
+/* SCORE ENGINE */
 function generateScore() {
-  const pw = document.getElementById("password").value;
-  const e = document.getElementById("email").value.toLowerCase();
+  let pw = document.getElementById("password").value;
+  let e = document.getElementById("email").value.toLowerCase();
 
-  let pwRisk = !pw ? 80 : 40;
-  let phRisk = e.includes("urgent") ? 60 : 10;
+  let pwRisk = !pw?80:30;
+  let phRisk = e.includes("urgent")?60:10;
 
-  let score = Math.round(100 - (pwRisk + phRisk)/2);
+  let score = Math.round(100-(pwRisk+phRisk)/2);
 
   document.getElementById("score").innerText =
-    "Security Score: " + score;
+    "SOC Security Score: " + score;
 
-  data[data.length-1] = 100-score;
-
-  log("Security score generated");
-
-  updateBars(pwRisk,phRisk,100-score);
+  update(pwRisk,phRisk,100-score);
+  log("SOC score generated");
 }
 
-/* BARS */
-function updateBars(pw,ph,sys) {
-  document.getElementById("pw").style.width = pw + "%";
-  document.getElementById("ph").style.width = ph + "%";
-  document.getElementById("sys").style.width = sys + "%";
+/* UPDATE */
+function update(pw,ph,sys) {
+  document.getElementById("pw").style.width=pw+"%";
+  document.getElementById("ph").style.width=ph+"%";
+  document.getElementById("sys").style.width=sys+"%";
 
   let alert = document.getElementById("alert");
 
-  if (sys > 60) alert.innerHTML = "🚨 HIGH RISK";
-  else if (sys > 30) alert.innerHTML = "⚠️ MEDIUM RISK";
-  else alert.innerHTML = "🟢 STABLE";
+  if(sys>60){
+    alert.innerHTML="<div class='alert critical'>CRITICAL INCIDENT</div>";
+  } else if(sys>30){
+    alert.innerHTML="<div class='alert medium'>Suspicious Activity</div>";
+  } else {
+    alert.innerHTML="<div class='alert safe'>System Stable</div>";
+  }
 }
 
-/* AI SUMMARY */
-function generateSummary() {
-  const pw = document.getElementById("password").value;
-  const e = document.getElementById("email").value.toLowerCase();
+/* AI */
+function summary() {
+  let pw=document.getElementById("password").value;
+  let e=document.getElementById("email").value;
 
-  let issues = [];
+  let issues=[];
+  if(!pw||pw.length<8)issues.push("Weak password");
+  if(e.includes("urgent"))issues.push("Phishing risk");
 
-  if (!pw || pw.length < 8) issues.push("Weak password detected");
-  if (e.includes("urgent")) issues.push("Suspicious email pattern");
+  document.getElementById("ai").innerText=
+  "SOC ANALYST REPORT\n\n- "+(issues.join("\n- ")||"No threats detected");
 
-  document.getElementById("aiSummary").innerText =
-    "INCIDENT REPORT\n\nFindings:\n- " +
-    (issues.join("\n- ") || "No threats detected");
-
-  log("AI summary generated");
+  log("AI SOC report generated");
 }
 
 draw();
