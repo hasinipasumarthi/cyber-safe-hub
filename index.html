@@ -14,17 +14,32 @@
       font-family: "Inter", sans-serif;
       background: #0b1220;
       color: #e5e7eb;
+      transition: 0.3s;
     }
 
     header {
-      padding: 30px;
+      padding: 20px;
       text-align: center;
       background: radial-gradient(circle at top, #1e3a8a, #0b1220);
+      position: relative;
     }
 
     h1 {
       margin: 0;
       color: #38bdf8;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #38bdf8;
+      color: black;
     }
 
     .container {
@@ -41,6 +56,7 @@
       padding: 20px;
       border-radius: 14px;
       border: 1px solid #1f2937;
+      transition: 0.3s;
     }
 
     .card h2 {
@@ -78,29 +94,63 @@
       font-weight: bold;
     }
 
-    /* INCIDENT LOG */
     #logPanel {
-      height: 250px;
+      height: 200px;
       overflow-y: auto;
       background: #0f172a;
-      border-radius: 8px;
       padding: 10px;
+      border-radius: 8px;
       font-family: monospace;
       font-size: 13px;
-      border: 1px solid #1f2937;
     }
 
-    .log-entry {
-      margin-bottom: 6px;
-      color: #38bdf8;
+    /* ========================= */
+    /* TERMINAL MODE */
+    /* ========================= */
+
+    body.terminal {
+      background: black;
+      color: #00ff88;
     }
 
-    .danger {
-      color: #ef4444;
+    body.terminal header {
+      background: black;
     }
 
-    .safe {
-      color: #22c55e;
+    body.terminal h1 {
+      color: #00ff88;
+    }
+
+    body.terminal .card {
+      background: black;
+      border: 1px solid #00ff88;
+    }
+
+    body.terminal .card h2 {
+      color: #00ff88;
+    }
+
+    body.terminal input {
+      background: black;
+      border: 1px solid #00ff88;
+      color: #00ff88;
+    }
+
+    body.terminal button {
+      background: black;
+      border: 1px solid #00ff88;
+      color: #00ff88;
+    }
+
+    body.terminal button:hover {
+      background: #00ff88;
+      color: black;
+    }
+
+    body.terminal #logPanel {
+      background: black;
+      border: 1px solid #00ff88;
+      color: #00ff88;
     }
 
   </style>
@@ -110,11 +160,11 @@
 
 <header>
   <h1>🔐 CyberSafe Hub Pro</h1>
+  <button class="toggle-btn" onclick="toggleTerminal()">Terminal Mode</button>
 </header>
 
 <div class="container">
 
-  <!-- PASSWORD -->
   <div class="card">
     <h2>🔑 Password Checker</h2>
     <input type="text" id="password" placeholder="Enter password">
@@ -122,7 +172,6 @@
     <div class="result" id="pwResult"></div>
   </div>
 
-  <!-- PHISHING -->
   <div class="card">
     <h2>🎣 Phishing Checker</h2>
     <input type="text" id="emailText" placeholder="Paste email text">
@@ -130,7 +179,12 @@
     <div class="result" id="phishResult"></div>
   </div>
 
-  <!-- INCIDENT LOG -->
+  <div class="card">
+    <h2>📊 Security Score</h2>
+    <button onclick="calculateScore()">Calculate Score</button>
+    <div class="result" id="scoreResult"></div>
+  </div>
+
   <div class="card">
     <h2>📋 Incident Log</h2>
     <div id="logPanel"></div>
@@ -142,21 +196,20 @@
 
 function addLog(message, type="info") {
   const log = document.getElementById("logPanel");
-
   const time = new Date().toLocaleTimeString();
 
   const entry = document.createElement("div");
-  entry.classList.add("log-entry");
-
-  if (type === "danger") entry.classList.add("danger");
-  if (type === "safe") entry.classList.add("safe");
-
   entry.textContent = `[${time}] ${message}`;
-
   log.prepend(entry);
 }
 
-/* PASSWORD CHECK */
+/* TERMINAL TOGGLE */
+function toggleTerminal() {
+  document.body.classList.toggle("terminal");
+  addLog("UI mode switched (terminal toggle)");
+}
+
+/* PASSWORD */
 function checkPassword() {
   const pw = document.getElementById("password").value;
   const out = document.getElementById("pwResult");
@@ -171,17 +224,17 @@ function checkPassword() {
 
   if (score <= 1) {
     out.textContent = "Weak ❌";
-    addLog("Weak password detected", "danger");
+    addLog("Weak password detected");
   } else if (score <= 3) {
     out.textContent = "Medium ⚠️";
-    addLog("Medium strength password entered", "info");
+    addLog("Medium password entered");
   } else {
     out.textContent = "Strong ✅";
-    addLog("Strong password created", "safe");
+    addLog("Strong password created");
   }
 }
 
-/* PHISHING CHECK */
+/* PHISHING */
 function checkPhishing() {
   const text = document.getElementById("emailText").value.toLowerCase();
   const out = document.getElementById("phishResult");
@@ -196,15 +249,41 @@ function checkPhishing() {
 
   if (score >= 2) {
     out.textContent = "⚠️ Phishing Likely";
-    addLog("Phishing email detected", "danger");
+    addLog("Phishing email detected");
   } else {
     out.textContent = "✔ Safe";
-    addLog("Email scanned: safe", "safe");
+    addLog("Email scanned safe");
   }
 }
 
-/* LOGIN EVENT (optional demo log) */
-addLog("System initialized", "safe");
+/* SCORE */
+function calculateScore() {
+  const pw = document.getElementById("password").value;
+  const email = document.getElementById("emailText")?.value?.toLowerCase() || "";
+
+  let score = 100;
+
+  if (!pw || pw.length < 8) score -= 30;
+  if (!/[A-Z]/.test(pw)) score -= 10;
+  if (!/[0-9]/.test(pw)) score -= 10;
+  if (!/[^A-Za-z0-9]/.test(pw)) score -= 10;
+
+  if (email.includes("urgent")) score -= 20;
+  if (email.includes("click here")) score -= 20;
+
+  let msg = `Security Score: ${score}`;
+
+  if (score >= 80) {
+    msg += " (Secure)";
+  } else if (score >= 50) {
+    msg += " (Medium Risk)";
+  } else {
+    msg += " (High Risk)";
+  }
+
+  document.getElementById("scoreResult").textContent = msg;
+  addLog(`Security score calculated: ${score}`);
+}
 
 </script>
 
