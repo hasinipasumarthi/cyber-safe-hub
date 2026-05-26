@@ -102,10 +102,6 @@ button:hover {
 }
 
 /* CHART */
-.bar-container {
-  margin-top: 10px;
-}
-
 .bar {
   height: 18px;
   background: #1f2937;
@@ -120,6 +116,13 @@ button:hover {
   transition: 0.5s;
   background: #38bdf8;
 }
+
+/* GRID AREAS */
+.card:nth-child(1) { grid-area: score; }
+.card:nth-child(2) { grid-area: log; }
+.card:nth-child(3) { grid-area: password; }
+.card:nth-child(4) { grid-area: phishing; }
+.card:nth-child(5) { grid-area: chart; }
 
 /* TERMINAL MODE */
 body.terminal {
@@ -142,13 +145,6 @@ body.terminal input {
 body.terminal .bar-fill {
   background: #00ff88;
 }
-
-/* GRID AREAS */
-.card:nth-child(1) { grid-area: score; }
-.card:nth-child(2) { grid-area: log; }
-.card:nth-child(3) { grid-area: password; }
-.card:nth-child(4) { grid-area: phishing; }
-.card:nth-child(5) { grid-area: chart; }
 
 </style>
 </head>
@@ -195,16 +191,14 @@ body.terminal .bar-fill {
 <div class="card">
   <h2>📈 Risk Visualization</h2>
 
-  <div class="bar-container">
-    <p>Password Risk</p>
-    <div class="bar"><div id="pwBar" class="bar-fill"></div></div>
+  <p>Password Risk</p>
+  <div class="bar"><div id="pwBar" class="bar-fill"></div></div>
 
-    <p>Phishing Risk</p>
-    <div class="bar"><div id="phishBar" class="bar-fill"></div></div>
+  <p>Phishing Risk</p>
+  <div class="bar"><div id="phishBar" class="bar-fill"></div></div>
 
-    <p>Overall Risk</p>
-    <div class="bar"><div id="overallBar" class="bar-fill"></div></div>
-  </div>
+  <p>Overall Risk</p>
+  <div class="bar"><div id="overallBar" class="bar-fill"></div></div>
 </div>
 
 </div>
@@ -219,7 +213,7 @@ function addLog(msg) {
   log.prepend(div);
 }
 
-/* TERMINAL */
+/* TERMINAL MODE */
 function toggleTerminal() {
   document.body.classList.toggle("terminal");
   addLog("Terminal mode toggled");
@@ -239,7 +233,7 @@ function checkPassword() {
   }
 
   document.getElementById("pwResult").textContent = "Password risk: " + risk;
-  addLog("Password checked");
+  addLog("Password analyzed");
 
   updateChart();
 }
