@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>CyberSafe SOC Pink Dashboard</title>
+<title>CyberSafe SOC Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -55,9 +55,9 @@ body.light canvas{
 .loginBox h2{
   text-align:center;
   color:#ff4da6;
-  margin-top:0;
 }
 
+/* INPUTS */
 input{
   width:100%;
   padding:12px;
@@ -69,6 +69,7 @@ input{
   box-sizing:border-box;
 }
 
+/* BUTTONS */
 button{
   width:100%;
   padding:11px;
@@ -79,12 +80,10 @@ button{
   cursor:pointer;
   font-weight:bold;
   color:white;
-  transition:0.2s;
 }
 
 button:hover{
-  transform:translateY(-1px);
-  filter:brightness(1.08);
+  filter:brightness(1.1);
 }
 
 /* TOPBAR */
@@ -95,9 +94,6 @@ button:hover{
   padding:12px 20px;
   background:#120012;
   border-bottom:1px solid #3b0a2a;
-  position:sticky;
-  top:0;
-  z-index:100;
 }
 
 .logo{
@@ -106,7 +102,6 @@ button:hover{
   font-size:18px;
 }
 
-/* TOP BUTTONS */
 .topButtons{
   display:flex;
   gap:10px;
@@ -124,7 +119,6 @@ button:hover{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:16px;
   padding:0;
 }
 
@@ -148,17 +142,15 @@ h2{
   font-size:12px;
   color:#ff4da6;
   text-transform:uppercase;
-  margin-top:0;
   letter-spacing:1px;
 }
 
 /* LOG */
 #log{
-  height:240px;
+  height:220px;
   overflow-y:auto;
   font-family:monospace;
   font-size:12px;
-  line-height:1.5;
 }
 
 /* BARS */
@@ -210,25 +202,36 @@ canvas{
   border:1px solid #3b0a2a;
 }
 
-/* SCORE */
-#score{
-  margin-top:10px;
-  font-weight:bold;
-  color:#ffb6d9;
-}
-
-/* AI BOX */
-pre{
-  white-space:pre-wrap;
-  font-family:monospace;
+/* CHATBOT */
+#chatBox{
+  height:220px;
+  overflow-y:auto;
+  background:#1a0010;
+  border:1px solid #3b0a2a;
+  border-radius:10px;
+  padding:10px;
   font-size:12px;
+  margin-bottom:10px;
 }
 
-/* STATUS BADGE */
+.user{
+  color:#ffb6d9;
+  margin-bottom:8px;
+}
+
+.bot{
+  color:#ffffff;
+  margin-bottom:14px;
+}
+
 .status{
   color:#4ade80;
-  font-weight:bold;
   font-size:13px;
+  font-weight:bold;
+}
+
+pre{
+  white-space:pre-wrap;
 }
 
 </style>
@@ -236,12 +239,12 @@ pre{
 
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen">
 
   <div class="loginBox">
 
-    <h2> CYBER SAFE LOGIN</h2>
+    <h2>💗 SOC LOGIN</h2>
 
     <input id="username" placeholder="Username">
 
@@ -253,31 +256,29 @@ pre{
 
 </div>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
 
   <div class="logo">
-     CyberSafe SOC Dashboard
+    💗 CyberSafe SOC Dashboard
   </div>
 
   <div class="topButtons">
 
     <div class="status">🟢 LIVE</div>
 
-    <!-- THEME -->
     <button class="circleBtn" onclick="toggleTheme()">🌓</button>
 
-    <!-- LOGOUT -->
     <button class="circleBtn" onclick="logout()">🚪</button>
 
   </div>
 
 </div>
 
-<!-- MAIN GRID -->
+<!-- GRID -->
 <div class="container">
 
-  <!-- LIVE GRAPH -->
+  <!-- GRAPH -->
   <div class="panel">
 
     <h2>Live Risk Stream</h2>
@@ -314,7 +315,7 @@ pre{
 
   </div>
 
-  <!-- RISK METRICS -->
+  <!-- RISKS -->
   <div class="panel">
 
     <h2>Risk Metrics</h2>
@@ -332,14 +333,27 @@ pre{
 
   </div>
 
-  <!-- AI ANALYST -->
+  <!-- AI REPORT -->
   <div class="panel">
 
-    <h2>AI SOC Analyst</h2>
+    <h2>AI SOC Report</h2>
 
     <button onclick="generateAI()">Generate Report</button>
 
     <pre id="ai"></pre>
+
+  </div>
+
+  <!-- AI CHATBOT -->
+  <div class="panel">
+
+    <h2>AI SOC Analyst Chat</h2>
+
+    <div id="chatBox"></div>
+
+    <input id="chatInput" placeholder="Ask the AI analyst...">
+
+    <button onclick="sendChat()">Send</button>
 
   </div>
 
@@ -388,7 +402,7 @@ function toggleTheme(){
 
 }
 
-/* LOG SYSTEM */
+/* LOG */
 function log(msg){
 
   const el=document.getElementById("log");
@@ -401,7 +415,6 @@ function log(msg){
 
 /* GRAPH */
 const c=document.getElementById("chart");
-
 const ctx=c.getContext("2d");
 
 c.width=c.offsetWidth;
@@ -422,7 +435,6 @@ function draw(){
   for(let i=0;i<data.length;i++){
 
     let x=(i/data.length)*c.width;
-
     let y=c.height-(data[i]/100)*c.height;
 
     if(i===0) ctx.moveTo(x,y);
@@ -434,7 +446,6 @@ function draw(){
 
 }
 
-/* LIVE DATA */
 setInterval(()=>{
 
   let last=data[data.length-1];
@@ -455,7 +466,7 @@ setInterval(()=>{
 
 },1000);
 
-/* PASSWORD SCAN */
+/* PASSWORD */
 function scanPassword(){
 
   let pw=document.getElementById("passwordInput").value;
@@ -470,7 +481,7 @@ function scanPassword(){
 
 }
 
-/* EMAIL SCAN */
+/* EMAIL */
 function scanEmail(){
 
   let e=document.getElementById("emailInput").value.toLowerCase();
@@ -505,19 +516,15 @@ function generateScore(){
   );
 
   document.getElementById("score").innerText=
-    "SOC Security Score: "+score;
+  "SOC Security Score: "+score;
 
-  updateBars(
-    pwRisk,
-    phRisk,
-    100-score
-  );
+  updateBars(pwRisk,phRisk,100-score);
 
   log("SOC score generated");
 
 }
 
-/* UPDATE BARS */
+/* UPDATE */
 function updateBars(pw,ph,sys){
 
   document.getElementById("pw").style.width=pw+"%";
@@ -531,21 +538,21 @@ function updateBars(pw,ph,sys){
   if(sys>60){
 
     alert.innerHTML=
-      "<div class='alert high'>🚨 CRITICAL RISK DETECTED</div>";
+    "<div class='alert high'>🚨 CRITICAL RISK DETECTED</div>";
 
   }
 
   else if(sys>30){
 
     alert.innerHTML=
-      "<div class='alert med'>⚠️ MEDIUM RISK ACTIVITY</div>";
+    "<div class='alert med'>⚠️ MEDIUM RISK ACTIVITY</div>";
 
   }
 
   else{
 
     alert.innerHTML=
-      "<div class='alert low'>🟢 SYSTEM STABLE</div>";
+    "<div class='alert low'>🟢 SYSTEM STABLE</div>";
 
   }
 
@@ -582,6 +589,68 @@ Recommended Actions:
 `;
 
   log("AI SOC report generated");
+
+}
+
+/* CHATBOT */
+function sendChat(){
+
+  let input=document.getElementById("chatInput");
+
+  let msg=input.value.toLowerCase();
+
+  if(!msg) return;
+
+  const chat=document.getElementById("chatBox");
+
+  let response="";
+
+  if(msg.includes("phishing")){
+
+    response="Phishing indicators detected. Recommend user awareness training and email filtering.";
+
+  }
+
+  else if(msg.includes("password")){
+
+    response="Use strong passwords with 12+ characters and enable MFA.";
+
+  }
+
+  else if(msg.includes("risk")){
+
+    response="Current risk levels indicate elevated phishing exposure.";
+
+  }
+
+  else if(msg.includes("mfa")){
+
+    response="MFA adds an additional authentication layer and reduces account compromise risk.";
+
+  }
+
+  else if(msg.includes("incident")){
+
+    response="Recommended response: isolate affected systems and investigate logs.";
+
+  }
+
+  else{
+
+    response="AI SOC Analyst recommends continued monitoring and threat analysis.";
+
+  }
+
+  chat.innerHTML += `
+    <div class="user"><strong>You:</strong> ${msg}</div>
+    <div class="bot"><strong>AI:</strong> ${response}</div>
+  `;
+
+  chat.scrollTop=chat.scrollHeight;
+
+  log("AI chatbot interaction");
+
+  input.value="";
 
 }
 
