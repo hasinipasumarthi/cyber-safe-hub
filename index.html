@@ -12,9 +12,26 @@ body {
   font-family: Inter, sans-serif;
   background: #050b18;
   color: #d1d5db;
+  transition: 0.3s;
 }
 
-/* LOGIN SCREEN */
+/* LIGHT MODE */
+body.light {
+  background: #f5f7fb;
+  color: #0f172a;
+}
+
+body.light .panel,
+body.light .topbar {
+  background: white;
+  border-color: #e2e8f0;
+}
+
+body.light canvas {
+  background: white;
+}
+
+/* LOGIN */
 #loginScreen {
   position: fixed;
   inset: 0;
@@ -31,11 +48,6 @@ body {
   border-radius: 10px;
   border: 1px solid #1f2937;
   background: #0b1220;
-}
-
-.loginBox h2 {
-  color: #38bdf8;
-  text-align: center;
 }
 
 input {
@@ -59,22 +71,29 @@ button {
   font-weight: bold;
 }
 
-button:hover {
-  background: #0ea5e9;
-}
-
 /* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 20px;
   background: #0b1220;
   border-bottom: 1px solid #1f2937;
 }
 
-.logo {
-  color: #38bdf8;
-  font-weight: bold;
+/* THEME BUTTON (SMALL CIRCLE) */
+.themeBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #1f2937;
+  background: #050b18;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
 /* GRID */
@@ -155,15 +174,15 @@ canvas {
     <input id="password" type="password" placeholder="Password">
 
     <button onclick="login()">Enter Dashboard</button>
-
-    <div id="loginMsg" style="margin-top:10px;font-size:12px;"></div>
   </div>
 </div>
 
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">🔐 CyberSafe SOC Dashboard</div>
-  <div>🟢 LIVE</div>
+
+  <!-- THEME TOGGLE BUTTON -->
+  <button class="themeBtn" onclick="toggleTheme()">🌓</button>
 </div>
 
 <div class="container">
@@ -224,7 +243,7 @@ canvas {
 
 let loggedIn = false;
 
-/* LOGIN FUNCTION */
+/* LOGIN */
 function login() {
   const u = document.getElementById("username").value;
   const p = document.getElementById("password").value;
@@ -232,18 +251,23 @@ function login() {
   if (u === "hasini.p77" && p === "Hasini9!") {
     loggedIn = true;
     document.getElementById("loginScreen").style.display = "none";
-    log("User authenticated: " + u);
+    log("User authenticated");
   } else {
-    document.getElementById("loginMsg").innerText =
-      "ACCESS DENIED ❌ Invalid credentials";
+    alert("ACCESS DENIED");
   }
+}
+
+/* THEME TOGGLE */
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  log("Theme toggled");
 }
 
 /* LOG */
 function log(msg) {
   const el = document.getElementById("log");
-  const time = new Date().toLocaleTimeString();
-  el.innerHTML = `[${time}] ${msg}<br>` + el.innerHTML;
+  const t = new Date().toLocaleTimeString();
+  el.innerHTML = `[${t}] ${msg}<br>` + el.innerHTML;
 }
 
 /* GRAPH */
@@ -277,76 +301,65 @@ setInterval(() => {
   draw();
 },1000);
 
-/* PASSWORD */
+/* SCANS */
 function scanPassword() {
   let pw = document.getElementById("passwordInput").value;
-
-  let risk = !pw ? 80 : (pw.length < 8 ? 40 : 20);
-
-  document.getElementById("pw").style.width = risk + "%";
-  data[data.length-1] = risk;
-
-  log("Password scan executed");
+  let risk = !pw ? 80 : (pw.length<8?40:20);
+  document.getElementById("pw").style.width = risk+"%";
+  data[data.length-1]=risk;
+  log("Password scan");
 }
 
-/* EMAIL */
 function scanEmail() {
   let e = document.getElementById("emailInput").value.toLowerCase();
-
-  let risk = 0;
-  if (e.includes("urgent")) risk += 50;
-  if (e.includes("click")) risk += 40;
-
-  document.getElementById("ph").style.width = risk + "%";
-  data[data.length-1] = risk;
-
-  log("Email scan executed");
+  let risk = (e.includes("urgent")?60:10);
+  document.getElementById("ph").style.width = risk+"%";
+  data[data.length-1]=risk;
+  log("Email scan");
 }
 
 /* SCORE */
 function generateScore() {
-  let pw = document.getElementById("passwordInput").value;
-  let e = document.getElementById("emailInput").value.toLowerCase();
+  let pw=document.getElementById("passwordInput").value;
+  let e=document.getElementById("emailInput").value.toLowerCase();
 
-  let pwRisk = !pw ? 80 : 30;
-  let phRisk = e.includes("urgent") ? 60 : 10;
+  let pwRisk=!pw?80:30;
+  let phRisk=e.includes("urgent")?60:10;
 
-  let score = Math.round(100 - (pwRisk + phRisk)/2);
+  let score=Math.round(100-(pwRisk+phRisk)/2);
 
-  document.getElementById("score").innerText =
-    "SOC Security Score: " + score;
+  document.getElementById("score").innerText="SOC Score: "+score;
 
-  updateBars(pwRisk, phRisk, 100-score);
-
-  log("SOC score generated");
+  update(pwRisk,phRisk,100-score);
+  log("Score generated");
 }
 
-/* BARS */
-function updateBars(pw, ph, sys) {
-  document.getElementById("pw").style.width = pw + "%";
-  document.getElementById("ph").style.width = ph + "%";
-  document.getElementById("sys").style.width = sys + "%";
+/* UPDATE */
+function update(pw,ph,sys){
+  document.getElementById("pw").style.width=pw+"%";
+  document.getElementById("ph").style.width=ph+"%";
+  document.getElementById("sys").style.width=sys+"%";
 
-  let alert = document.getElementById("alert");
+  let alert=document.getElementById("alert");
 
-  if (sys > 60) alert.innerHTML = "<div class='alert high'>CRITICAL RISK</div>";
-  else if (sys > 30) alert.innerHTML = "<div class='alert med'>MEDIUM RISK</div>";
-  else alert.innerHTML = "<div class='alert low'>SYSTEM STABLE</div>";
+  if(sys>60) alert.innerHTML="<div class='alert high'>CRITICAL</div>";
+  else if(sys>30) alert.innerHTML="<div class='alert med'>MEDIUM</div>";
+  else alert.innerHTML="<div class='alert low'>SAFE</div>";
 }
 
 /* AI */
-function generateAI() {
-  let pw = document.getElementById("passwordInput").value;
-  let e = document.getElementById("emailInput").value;
+function generateAI(){
+  let pw=document.getElementById("passwordInput").value;
+  let e=document.getElementById("emailInput").value;
 
-  let issues = [];
-  if (!pw || pw.length < 8) issues.push("Weak password detected");
-  if (e.includes("urgent")) issues.push("Phishing indicators detected");
+  let issues=[];
+  if(!pw||pw.length<8)issues.push("Weak password");
+  if(e.includes("urgent"))issues.push("Phishing risk");
 
-  document.getElementById("ai").innerText =
-    "SOC ANALYST REPORT\n\n- " + (issues.join("\n- ") || "No threats detected");
+  document.getElementById("ai").innerText=
+  "REPORT\n\n- "+(issues.join("\n- ")||"No issues");
 
-  log("AI report generated");
+  log("AI report");
 }
 
 draw();
