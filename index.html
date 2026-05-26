@@ -16,26 +16,36 @@
       color: #e5e7eb;
     }
 
-    /* LOGIN PAGE */
-    #loginPage {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    header {
+      padding: 30px;
+      text-align: center;
       background: radial-gradient(circle at top, #1e3a8a, #0b1220);
     }
 
-    .login-box {
-      background: #111827;
+    h1 {
+      margin: 0;
+      color: #38bdf8;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
       padding: 30px;
-      border-radius: 12px;
-      width: 300px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #111827;
+      padding: 20px;
+      border-radius: 14px;
       border: 1px solid #1f2937;
     }
 
-    .login-box h2 {
-      text-align: center;
+    .card h2 {
       color: #38bdf8;
+      margin-top: 0;
     }
 
     input {
@@ -63,62 +73,34 @@
       background: #0ea5e9;
     }
 
-    /* DASHBOARD */
-    #dashboard {
-      display: none;
-    }
-
-    header {
-      padding: 30px;
-      text-align: center;
-      background: radial-gradient(circle at top, #1e3a8a, #0b1220);
-    }
-
-    h1 {
-      margin: 0;
-      color: #38bdf8;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #111827;
-      padding: 20px;
-      border-radius: 14px;
-      border: 1px solid #1f2937;
-    }
-
-    .card h2 {
-      color: #38bdf8;
-      margin-top: 0;
-    }
-
     .result {
       margin-top: 10px;
       font-weight: bold;
     }
 
-    #scanLog {
-      font-family: monospace;
+    /* INCIDENT LOG */
+    #logPanel {
+      height: 250px;
+      overflow-y: auto;
       background: #0f172a;
-      padding: 10px;
       border-radius: 8px;
-      min-height: 120px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 13px;
+      border: 1px solid #1f2937;
+    }
+
+    .log-entry {
+      margin-bottom: 6px;
       color: #38bdf8;
     }
 
-    .logout {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 120px;
+    .danger {
+      color: #ef4444;
+    }
+
+    .safe {
+      color: #22c55e;
     }
 
   </style>
@@ -126,73 +108,57 @@
 
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="loginPage">
-  <div class="login-box">
-    <h2>🔐 Secure Login</h2>
-    <input type="text" id="username" placeholder="Username">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
+<header>
+  <h1>🔐 CyberSafe Hub Pro</h1>
+</header>
+
+<div class="container">
+
+  <!-- PASSWORD -->
+  <div class="card">
+    <h2>🔑 Password Checker</h2>
+    <input type="text" id="password" placeholder="Enter password">
+    <button onclick="checkPassword()">Analyze</button>
+    <div class="result" id="pwResult"></div>
   </div>
-</div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-
-  <button class="logout" onclick="logout()">Logout</button>
-
-  <header>
-    <h1>CyberSafe Hub Pro</h1>
-  </header>
-
-  <div class="container">
-
-    <div class="card">
-      <h2>🔑 Password Checker</h2>
-      <input type="text" id="pwInput" placeholder="Enter password">
-      <button onclick="checkPassword()">Analyze</button>
-      <div class="result" id="pwResult"></div>
-    </div>
-
-    <div class="card">
-      <h2>🎣 Phishing Checker</h2>
-      <input type="text" id="emailText" placeholder="Paste email text">
-      <button onclick="checkPhishing()">Scan</button>
-      <div class="result" id="phishResult"></div>
-    </div>
-
-    <div class="card">
-      <h2>🖥 Live Scan</h2>
-      <div id="scanLog"></div>
-    </div>
-
+  <!-- PHISHING -->
+  <div class="card">
+    <h2>🎣 Phishing Checker</h2>
+    <input type="text" id="emailText" placeholder="Paste email text">
+    <button onclick="checkPhishing()">Scan</button>
+    <div class="result" id="phishResult"></div>
   </div>
+
+  <!-- INCIDENT LOG -->
+  <div class="card">
+    <h2>📋 Incident Log</h2>
+    <div id="logPanel"></div>
+  </div>
+
 </div>
 
 <script>
 
-/* LOGIN LOGIC */
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
+function addLog(message, type="info") {
+  const log = document.getElementById("logPanel");
 
-  if (user === "admin" && pass === "1234") {
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    runScan();
-  } else {
-    alert("Invalid credentials");
-  }
-}
+  const time = new Date().toLocaleTimeString();
 
-function logout() {
-  document.getElementById("dashboard").style.display = "none";
-  document.getElementById("loginPage").style.display = "flex";
+  const entry = document.createElement("div");
+  entry.classList.add("log-entry");
+
+  if (type === "danger") entry.classList.add("danger");
+  if (type === "safe") entry.classList.add("safe");
+
+  entry.textContent = `[${time}] ${message}`;
+
+  log.prepend(entry);
 }
 
 /* PASSWORD CHECK */
 function checkPassword() {
-  const pw = document.getElementById("pwInput").value;
+  const pw = document.getElementById("password").value;
   const out = document.getElementById("pwResult");
 
   let score = 0;
@@ -201,9 +167,18 @@ function checkPassword() {
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
 
-  if (score <= 1) out.textContent = "Weak ❌";
-  else if (score <= 3) out.textContent = "Medium ⚠️";
-  else out.textContent = "Strong ✅";
+  if (!pw) return;
+
+  if (score <= 1) {
+    out.textContent = "Weak ❌";
+    addLog("Weak password detected", "danger");
+  } else if (score <= 3) {
+    out.textContent = "Medium ⚠️";
+    addLog("Medium strength password entered", "info");
+  } else {
+    out.textContent = "Strong ✅";
+    addLog("Strong password created", "safe");
+  }
 }
 
 /* PHISHING CHECK */
@@ -217,29 +192,19 @@ function checkPhishing() {
   if (text.includes("click here")) score++;
   if (text.includes("verify")) score++;
 
-  if (score >= 2) out.textContent = "⚠️ Phishing Likely";
-  else out.textContent = "✔ Safe";
+  if (!text) return;
+
+  if (score >= 2) {
+    out.textContent = "⚠️ Phishing Likely";
+    addLog("Phishing email detected", "danger");
+  } else {
+    out.textContent = "✔ Safe";
+    addLog("Email scanned: safe", "safe");
+  }
 }
 
-/* LIVE SCAN */
-const scanMessages = [
-  "Logging into secure system...",
-  "Scanning user permissions...",
-  "Checking firewall status...",
-  "Analyzing threats...",
-  "System secure ✔"
-];
-
-let i = 0;
-
-function runScan() {
-  const log = document.getElementById("scanLog");
-  if (!log || i >= scanMessages.length) return;
-
-  log.innerHTML += scanMessages[i] + "<br>";
-  i++;
-  setTimeout(runScan, 1200);
-}
+/* LOGIN EVENT (optional demo log) */
+addLog("System initialized", "safe");
 
 </script>
 
