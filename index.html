@@ -16,37 +16,26 @@
       color: #e5e7eb;
     }
 
-    header {
-      padding: 40px;
-      text-align: center;
+    /* LOGIN PAGE */
+    #loginPage {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       background: radial-gradient(circle at top, #1e3a8a, #0b1220);
     }
 
-    h1 {
-      margin: 0;
-      color: #38bdf8;
-      font-size: 40px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
+    .login-box {
       background: #111827;
-      padding: 20px;
-      border-radius: 14px;
+      padding: 30px;
+      border-radius: 12px;
+      width: 300px;
       border: 1px solid #1f2937;
     }
 
-    .card h2 {
+    .login-box h2 {
+      text-align: center;
       color: #38bdf8;
-      margin-top: 0;
     }
 
     input {
@@ -74,6 +63,43 @@
       background: #0ea5e9;
     }
 
+    /* DASHBOARD */
+    #dashboard {
+      display: none;
+    }
+
+    header {
+      padding: 30px;
+      text-align: center;
+      background: radial-gradient(circle at top, #1e3a8a, #0b1220);
+    }
+
+    h1 {
+      margin: 0;
+      color: #38bdf8;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #111827;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+    }
+
+    .card h2 {
+      color: #38bdf8;
+      margin-top: 0;
+    }
+
     .result {
       margin-top: 10px;
       font-weight: bold;
@@ -88,68 +114,85 @@
       color: #38bdf8;
     }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #64748b;
+    .logout {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 120px;
     }
+
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>🔐 CyberSafe Hub Pro</h1>
-  <p>Interactive Cybersecurity Awareness Dashboard</p>
-</header>
-
-<div class="container">
-
-  <!-- PASSWORD TOOL -->
-  <div class="card">
-    <h2>🔑 Password Checker</h2>
-    <input type="text" id="password" placeholder="Enter password">
-    <button onclick="checkPassword()">Analyze</button>
-    <div class="result" id="pwResult"></div>
+<!-- LOGIN SCREEN -->
+<div id="loginPage">
+  <div class="login-box">
+    <h2>🔐 Secure Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
   </div>
+</div>
 
-  <!-- PHISHING CHECKER -->
-  <div class="card">
-    <h2>🎣 Phishing Checker</h2>
-    <input type="text" id="emailText" placeholder="Paste email text">
-    <button onclick="checkPhishing()">Scan</button>
-    <div class="result" id="phishResult"></div>
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <button class="logout" onclick="logout()">Logout</button>
+
+  <header>
+    <h1>CyberSafe Hub Pro</h1>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>🔑 Password Checker</h2>
+      <input type="text" id="pwInput" placeholder="Enter password">
+      <button onclick="checkPassword()">Analyze</button>
+      <div class="result" id="pwResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>🎣 Phishing Checker</h2>
+      <input type="text" id="emailText" placeholder="Paste email text">
+      <button onclick="checkPhishing()">Scan</button>
+      <div class="result" id="phishResult"></div>
+    </div>
+
+    <div class="card">
+      <h2>🖥 Live Scan</h2>
+      <div id="scanLog"></div>
+    </div>
+
   </div>
-
-  <!-- SECURITY SCORE -->
-  <div class="card">
-    <h2>📊 Security Score</h2>
-    <button onclick="calculateScore()">Calculate Score</button>
-    <div class="result" id="scoreResult"></div>
-  </div>
-
-  <!-- LIVE SCAN -->
-  <div class="card">
-    <h2>🖥 Live Security Scan</h2>
-    <div id="scanLog"></div>
-  </div>
-
-  <!-- TIPS -->
-  <div class="card">
-    <h2>💡 Security Tips</h2>
-    <p>✔ Use unique passwords for every account</p>
-    <p>✔ Never click suspicious links</p>
-    <p>✔ Enable 2-factor authentication</p>
-    <p>✔ Watch for urgent scam emails</p>
-  </div>
-
 </div>
 
 <script>
 
+/* LOGIN LOGIC */
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+
+  if (user === "admin" && pass === "1234") {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    runScan();
+  } else {
+    alert("Invalid credentials");
+  }
+}
+
+function logout() {
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("loginPage").style.display = "flex";
+}
+
+/* PASSWORD CHECK */
 function checkPassword() {
-  const pw = document.getElementById("password").value;
+  const pw = document.getElementById("pwInput").value;
   const out = document.getElementById("pwResult");
 
   let score = 0;
@@ -158,90 +201,45 @@ function checkPassword() {
   if (/[0-9]/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
 
-  if (!pw) return out.textContent = "";
-
-  if (score <= 1) {
-    out.textContent = "Weak Password ❌";
-    out.style.color = "#ef4444";
-  } else if (score <= 3) {
-    out.textContent = "Medium Password ⚠️";
-    out.style.color = "#f59e0b";
-  } else {
-    out.textContent = "Strong Password ✅";
-    out.style.color = "#22c55e";
-  }
+  if (score <= 1) out.textContent = "Weak ❌";
+  else if (score <= 3) out.textContent = "Medium ⚠️";
+  else out.textContent = "Strong ✅";
 }
 
+/* PHISHING CHECK */
 function checkPhishing() {
   const text = document.getElementById("emailText").value.toLowerCase();
   const out = document.getElementById("phishResult");
 
   let score = 0;
-
   if (text.includes("urgent")) score++;
   if (text.includes("password")) score++;
   if (text.includes("click here")) score++;
   if (text.includes("verify")) score++;
 
-  if (!text) return out.textContent = "";
-
-  if (score >= 2) {
-    out.textContent = "⚠️ Likely Phishing Email";
-    out.style.color = "#ef4444";
-  } else {
-    out.textContent = "✔ Looks Safe";
-    out.style.color = "#22c55e";
-  }
+  if (score >= 2) out.textContent = "⚠️ Phishing Likely";
+  else out.textContent = "✔ Safe";
 }
 
-function calculateScore() {
-  const pw = document.getElementById("password").value;
-  const email = document.getElementById("emailText").value.toLowerCase();
-
-  let score = 100;
-
-  if (!pw || pw.length < 8) score -= 30;
-  if (!/[A-Z]/.test(pw)) score -= 10;
-  if (!/[0-9]/.test(pw)) score -= 10;
-  if (!/[^A-Za-z0-9]/.test(pw)) score -= 10;
-
-  if (email.includes("urgent") || email.includes("click here")) score -= 20;
-
-  const out = document.getElementById("scoreResult");
-
-  if (score >= 80) {
-    out.textContent = "Security Score: " + score + " (Good ✔)";
-    out.style.color = "#22c55e";
-  } else if (score >= 50) {
-    out.textContent = "Security Score: " + score + " (Medium ⚠️)";
-    out.style.color = "#f59e0b";
-  } else {
-    out.textContent = "Security Score: " + score + " (Risky ❌)";
-    out.style.color = "#ef4444";
-  }
-}
-
+/* LIVE SCAN */
 const scanMessages = [
-  "Scanning system files...",
-  "Checking password strength...",
-  "Analyzing email patterns...",
-  "Detecting phishing signatures...",
-  "No threats detected ✔"
+  "Logging into secure system...",
+  "Scanning user permissions...",
+  "Checking firewall status...",
+  "Analyzing threats...",
+  "System secure ✔"
 ];
 
 let i = 0;
 
 function runScan() {
   const log = document.getElementById("scanLog");
+  if (!log || i >= scanMessages.length) return;
 
-  if (i < scanMessages.length) {
-    log.innerHTML += scanMessages[i] + "<br>";
-    i++;
-    setTimeout(runScan, 1200);
-  }
+  log.innerHTML += scanMessages[i] + "<br>";
+  i++;
+  setTimeout(runScan, 1200);
 }
-
-runScan();
 
 </script>
 
