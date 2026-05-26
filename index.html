@@ -7,7 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* ===== YOUR FULL CSS (UNCHANGED) ===== */
+
+/* =========================
+   BASE THEME
+========================= */
 
 body{
   margin:0;
@@ -22,15 +25,9 @@ body.light{
   color:#4a044e;
 }
 
-body.light .panel,
-body.light .topbar{
-  background:white;
-  border-color:#f9a8d4;
-}
-
-body.light canvas{
-  background:white;
-}
+/* =========================
+   LOGIN SCREEN
+========================= */
 
 #loginScreen{
   position:fixed;
@@ -48,7 +45,6 @@ body.light canvas{
   border-radius:14px;
   border:1px solid #3b0a2a;
   background:#120012;
-  box-shadow:0 0 25px rgba(255,77,166,0.2);
 }
 
 .loginBox h2{
@@ -56,6 +52,10 @@ body.light canvas{
   color:#ff4da6;
   margin-top:0;
 }
+
+/* =========================
+   INPUTS + BUTTONS
+========================= */
 
 input{
   width:100%;
@@ -80,6 +80,10 @@ button{
   color:white;
 }
 
+/* =========================
+   TOP BAR
+========================= */
+
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -93,9 +97,9 @@ button{
 }
 
 .logo{
-  color:#ff4da6;
   font-weight:700;
   font-size:18px;
+  color:#ff4da6;
 }
 
 .topButtons{
@@ -115,9 +119,11 @@ button{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:16px;
-  padding:0;
 }
+
+/* =========================
+   GRID
+========================= */
 
 .container{
   display:grid;
@@ -125,6 +131,10 @@ button{
   gap:14px;
   padding:14px;
 }
+
+/* =========================
+   PANELS
+========================= */
 
 .panel{
   background:#120012;
@@ -140,12 +150,20 @@ h2{
   margin-top:0;
 }
 
+/* =========================
+   LOG
+========================= */
+
 #log{
-  height:240px;
+  height:220px;
   overflow-y:auto;
   font-family:monospace;
   font-size:12px;
 }
+
+/* =========================
+   RISK BARS
+========================= */
 
 .bar{
   height:10px;
@@ -162,6 +180,10 @@ h2{
   transition:0.4s;
 }
 
+/* =========================
+   GRAPH
+========================= */
+
 canvas{
   width:100%;
   height:240px;
@@ -169,6 +191,10 @@ canvas{
   border-radius:10px;
   border:1px solid #3b0a2a;
 }
+
+/* =========================
+   CHAT
+========================= */
 
 #chatBox{
   height:200px;
@@ -181,11 +207,6 @@ canvas{
 .user{color:#ffb6d9;}
 .bot{color:white;}
 
-.status{
-  color:#4ade80;
-  font-weight:bold;
-  font-size:13px;
-}
 </style>
 </head>
 
@@ -201,7 +222,7 @@ canvas{
   </div>
 </div>
 
-<!-- TOPBAR -->
+<!-- TOP BAR -->
 <div class="topbar">
 
   <div class="logo">CyberSafe SOC Dashboard</div>
@@ -210,17 +231,16 @@ canvas{
 
     <div class="status">🟢 LIVE</div>
 
-    <!-- 🌍 ATTACK MAP BUTTON ADDED -->
+    <!-- 🌍 ATTACK MAP BUTTON -->
     <button class="circleBtn" onclick="window.location.href='attack-map.html'">🌍</button>
 
     <button class="circleBtn" onclick="toggleTheme()">🌓</button>
     <button class="circleBtn" onclick="logout()">🚪</button>
 
   </div>
-
 </div>
 
-<!-- EVERYTHING ELSE (UNCHANGED) -->
+<!-- MAIN DASHBOARD -->
 <div class="container">
 
   <div class="panel">
@@ -231,13 +251,11 @@ canvas{
   <div class="panel">
     <h2>Security Scanner</h2>
 
-    <input id="passwordInput" placeholder="Enter password">
+    <input id="passwordInput" placeholder="Password">
     <button onclick="scanPassword()">Password Scan</button>
 
-    <input id="emailInput" placeholder="Paste email text">
+    <input id="emailInput" placeholder="Email text">
     <button onclick="scanEmail()">Phishing Scan</button>
-
-    <button onclick="generateScore()">Generate SOC Score</button>
 
     <div id="score"></div>
   </div>
@@ -256,13 +274,10 @@ canvas{
     <div>Phishing Risk</div>
     <div class="bar"><div id="ph" class="fill"></div></div>
 
-    <div>System Risk</div>
-    <div class="bar"><div id="sys" class="fill"></div></div>
-
   </div>
 
   <div class="panel">
-    <h2>AI SOC Analyst</h2>
+    <h2>AI Analyst</h2>
 
     <div id="chatBox"></div>
     <input id="chatInput" placeholder="Ask AI...">
@@ -313,6 +328,7 @@ function draw(){
   for(let i=0;i<data.length;i++){
     let x=(i/data.length)*c.width;
     let y=c.height-(data[i]/100)*c.height;
+
     if(i===0) ctx.moveTo(x,y);
     else ctx.lineTo(x,y);
   }
@@ -348,8 +364,8 @@ function sendChat(){
   if(!msg) return;
 
   let res="Monitoring system activity.";
-  if(msg.includes("phishing")) res="Phishing detected patterns.";
-  if(msg.includes("password")) res="Use MFA and strong passwords.";
+  if(msg.includes("phishing")) res="Phishing detected.";
+  if(msg.includes("password")) res="Use MFA.";
 
   chat.innerHTML+=`<div class="user">You: ${msg}</div><div class="bot">AI: ${res}</div>`;
   input.value="";
